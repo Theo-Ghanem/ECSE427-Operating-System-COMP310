@@ -23,6 +23,7 @@ int help();
 int quit();
 int set(char *var, char *value);
 int print(char *var);
+int echo(char *var);
 int run(char *script);
 int badcommandFileDoesNotExist();
 
@@ -96,9 +97,16 @@ int interpreter(char *command_args[], int args_size)
 		if (args_size != 2)
 			return badcommand();
 		return run(command_args[1]);
-
-		// for 1.2.2 add echo command TODO
 	}
+	// for 1.2.2 add echo command TODO
+	else if (strcmp(command_args[0], "echo") == 0)
+	{
+		// echo
+		if (args_size != 2)
+			return badcommand();
+		return echo(command_args[1]);
+	}
+
 	else
 		return badcommand();
 }
@@ -174,3 +182,26 @@ int run(char *script)
 
 // 1.2.2 Add the echo command
 // TODO
+int echo(char *var)
+{
+	// check if first character of string is not a $ then just print the string
+	if (var[0] != '$')
+	{
+		printf("%s\n", var);
+		return 0;
+	}
+
+	memmove(var, var + 1, strlen(var)); // remove the $ from the string
+
+	// if first character of string is a $, check if var is in shell memory
+	if (strcmp(mem_get_value(var), "Variable does not exist") == 0)
+	{
+		printf("\n");
+		return 0;
+	}
+	else
+	{
+		printf("%s\n", mem_get_value(var));
+		return 0;
+	}
+}
