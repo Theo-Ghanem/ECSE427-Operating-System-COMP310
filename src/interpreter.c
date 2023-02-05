@@ -107,6 +107,42 @@ int interpreter(char *command_args[], int args_size)
 		return echo(command_args[1]);
 	}
 
+	// for 1.2.4 my_ls command
+	else if (strcmp(command_args[0], "my_ls") == 0)
+	{
+		// my_ls
+		if (args_size != 1)
+			return badcommand();
+		return my_ls();
+	}
+
+	// for 1.2.4 my_mkdir command
+	else if (strcmp(command_args[0], "my_mkdir") == 0)
+	{
+		// my_mkdir
+		if (args_size != 2)
+			return badcommand();
+		return my_mkdir(command_args[1]);
+	}
+
+	// for 1.2.4 my_touch command
+	else if (strcmp(command_args[0], "my_touch") == 0)
+	{
+		// my_touch
+		if (args_size != 2)
+			return badcommand();
+		return my_touch(command_args[1]);
+	}
+
+	// for 1.2.4 my_cd command
+	else if (strcmp(command_args[0], "my_cd") == 0)
+	{
+		// my_cd
+		if (args_size != 2)
+			return badcommand();
+		return my_cd(command_args[1]);
+	}
+
 	else
 		return badcommand();
 }
@@ -205,4 +241,30 @@ int echo(char *var)
 		printf("%s\n", mem_get_value(var));
 		return 0;
 	}
+}
+
+// 1.2.4 Add the ls command
+// lists all the files present in the current directory
+int my_ls()
+{
+}
+
+// 1.2.4 Add the my_mkdir command
+// creates a new directory with the name dirname in the current directory.
+int my_mkdir(char *dirName)
+{
+}
+
+// 1.2.4 Add the my_touch filename command
+// creates a new empty file inside the current directory. filename is an alphanumeric string
+int my_touch(char *fileName)
+{
+}
+
+// 1.2.4 add the my_cd command
+// changes current directory to directory dirname, inside the current directory. If
+// dirname does not exist inside the current directory, my_cd displays “Bad command: my_cd” and stays
+// inside the current directory. dirname should be an alphanumeric string
+int my_cd(char *dirName)
+{
 }
