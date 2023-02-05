@@ -98,7 +98,7 @@ int interpreter(char *command_args[], int args_size)
 			return badcommand();
 		return run(command_args[1]);
 	}
-	// for 1.2.2 add echo command TODO
+	// for 1.2.2 add echo command DONE
 	else if (strcmp(command_args[0], "echo") == 0)
 	{
 		// echo
@@ -157,19 +157,20 @@ int run(char *script)
 	char line[1000];
 	FILE *p = fopen(script, "rt"); // the program is in a file
 
-	if (p == NULL)
+	if (p == NULL) // if the file does not exist
 	{
 		return badcommandFileDoesNotExist();
 	}
 
-	fgets(line, 999, p);
+	fgets(line, 999, p); // read the first line
 	while (1)
 	{
-		errCode = parseInput(line); // which calls interpreter()
-		memset(line, 0, sizeof(line));
+		errCode = parseInput(line);	   // which calls interpreter()
+		memset(line, 0, sizeof(line)); // empty the string
 
-		if (feof(p))
+		if (feof(p)) // checks if we are at the end of the file
 		{
+			// go back to interactive mode and wait for the next command
 			break;
 		}
 		fgets(line, 999, p);
@@ -181,7 +182,7 @@ int run(char *script)
 }
 
 // 1.2.2 Add the echo command
-// TODO
+// Done
 int echo(char *var)
 {
 	// check if first character of string is not a $ then just print the string
