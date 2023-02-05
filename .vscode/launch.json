@@ -7,14 +7,14 @@
         {
         "name": "Debug mysh",
         "type": "cppdbg",
-        "request": "launch",
+        "request": "attach",
         "program": "${workspaceFolder}/src/mysh",
-        "args": [],
-        "stopAtEntry": true,
-        "environment": [],
-        "cwd": "${workspaceFolder}/src",
-        "externalConsole": false,
-        "MIMode": "lldb",
+        // "args": [],
+        // "stopAtEntry": true,
+        // "environment": [],
+        // "cwd": "${workspaceFolder}/src",
+        // "externalConsole": false,
+        "MIMode": "gdb",
         }
     ],
 }
