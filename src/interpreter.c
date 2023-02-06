@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 #include "shellmemory.h"
 #include "shell.h"
 
@@ -247,10 +248,34 @@ int echo(char *var)
 	}
 }
 
+// helper function for my_ls
+// filters out the hidden files
+int filter(const struct dirent *name)
+{
+  if (name->d_name[0] == '.')
+	return 0;
+  else
+	return 1;
+}
+
+int sort(const struct dirent **a, const struct dirent **b)
+{
+	return strcmp((*a)->d_name, (*b)->d_name);
+}
+
 // 1.2.4 Add the ls command
 // lists all the files present in the current directory
 int my_ls()
 {
+	// use dirent.h library to open and read the current directory
+	struct dirent **files;
+	int numFiles = scandir(".", &files, filter, sort);
+
+	for (int i = 0; i < numFiles; i++)
+	{
+		printf("%s\n", files[i]->d_name);
+	}
+
 }
 
 // 1.2.4 Add the my_mkdir command
