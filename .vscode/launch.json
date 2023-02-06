@@ -9,8 +9,6 @@
             "type": "cppdbg",
             "request": "attach",
             "program": "${workspaceFolder}/src/mysh",
-            "processId": "${input:FindPidMysh}",
-            "preLaunchTask": "Run debug",
             "linux": {
                 "name": "Debug mysh",
                 "type": "cppdbg",

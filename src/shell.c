@@ -28,10 +28,9 @@ int main(int argc, char *argv[])
     {
         if (isatty(STDIN_FILENO)) // check if stdin is a terminal 
         {
-        printf("%c ", prompt); // display prompt
-        }
-        // here you should check the unistd library
-        // so that you can find a way to not display $ in the batch mode
+        printf("%c ", prompt); // display prompt only if not in batch mode
+        } 
+
         fgets(userInput, MAX_USER_INPUT - 1, stdin); // get user input
         errorCode = parseInput(userInput);
         if (errorCode == -1)
@@ -50,9 +49,13 @@ int parseInput(char ui[])
     int b;
     int w = 0; // wordID
     int errorCode;
-    for (a = 0; ui[a] == ' ' && a < 1000; a++)
-        ;                                              // skip white spaces
-    while (ui[a] != '\n' && ui[a] != '\0' && a < 1000) // loop through the input
+    if (ui[0] == NULL)
+    {
+        freopen("/dev/tty", "r", stdin);
+        return 1;
+    }
+    for (a = 0; ui[a] == ' ' && a < 1000; a++); // skip white spaces
+    while (ui[a] != '\n' && ui[a] != '\0' && a < 1000)  // loop through the input
     {
         for (b = 0; ui[a] != ';' && ui[a] != '\0' && ui[a] != '\n' && ui[a] != ' ' && a < 1000; a++, b++) // loop through the word
         {
