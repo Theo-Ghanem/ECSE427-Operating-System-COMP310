@@ -5,16 +5,35 @@
     "version": "0.2.0",
     "configurations": [
         {
-        "name": "Debug mysh",
-        "type": "cppdbg",
-        "request": "attach",
-        "program": "${workspaceFolder}/src/mysh",
-        // "args": [],
-        // "stopAtEntry": true,
-        // "environment": [],
-        // "cwd": "${workspaceFolder}/src",
-        // "externalConsole": false,
-        "MIMode": "gdb",
+            "name": "Debug mysh",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "${workspaceFolder}/src/mysh",
+            "processId": "${input:FindPidMysh}",
+            "preLaunchTask": "Run debug",
+            "linux": {
+                "name": "Debug mysh",
+                "type": "cppdbg",
+                "request": "attach",
+                "program": "${workspaceFolder}/src/mysh",
+                "MIMode": "gdb",
+                "miDebuggerPath": "/usr/bin/gdb"
+            },
+            "osx": {
+                "name": "Debug mysh",
+                "type": "cppdbg",
+                "request": "attach",
+                "program": "${workspaceFolder}/src/mysh",
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "name": "Debug mysh",
+                "type": "cppdbg",
+                "request": "attach",
+                "program": "${workspaceFolder}/src/mysh",
+                "MIMode": "gdb",
+                "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
+            }
         }
     ],
 }

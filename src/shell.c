@@ -26,10 +26,10 @@ int main(int argc, char *argv[])
     mem_init();
     while (1)
     {
-        // if (isatty(fileno(stdout))) // check if stdout is a terminal
-        // {
+        if (isatty(STDIN_FILENO)) // check if stdin is a terminal 
+        {
         printf("%c ", prompt); // display prompt
-        // }
+        }
         // here you should check the unistd library
         // so that you can find a way to not display $ in the batch mode
         fgets(userInput, MAX_USER_INPUT - 1, stdin); // get user input
