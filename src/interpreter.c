@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <ctype.h>
 #include "shellmemory.h"
 #include "shell.h"
 
@@ -258,11 +259,56 @@ int filter(const struct dirent *name)
 	return 1;
 }
 
+// helper function for sort
+// compares char a and b
+// returns -1 if a before b, 0 if a == b, 1 if b before a
+int compareChar(char a, char b)
+{
+	// used cytpe.h library to determine if a char is a number, capital letter, or lowercase letter
+	// instead of using ASCII values to reduce clutter
+
+	if (isdigit(a) && isalpha(b))
+		return -1;
+	else if (isalpha(a) && isdigit(b))
+		return 1;
+	else if (isalpha(a) && isalpha(b))
+	{
+		if (tolower(a) == tolower(b))
+		{
+			if (isupper(a) && islower(b))
+				return -1;
+			else if (islower(a) && isupper(b))
+				return 1;
+			else
+				return 0;
+		} else 
+		{
+			if (tolower(a) < tolower(b))
+				return -1;
+			else
+				return 1;
+		}
+	}
+	
+}
+
 // helper function for my_ls
 // sorts the files in alphabetical order (nums, then caps, then min)
 int sort(const struct dirent **a, const struct dirent **b)
 {
-	return strcmp((*a)->d_name, (*b)->d_name);
+	const char *nameA = (*a)->d_name;
+	const char *nameB = (*b)->d_name;
+
+	for (int i = 0; i < strlen(nameA) && i < strlen(nameB); i++)
+	{
+		if (compareChar(nameA[i], nameB[i]) == 1)
+			return 1;
+		else if (compareChar(nameA[i], nameB[i]) == -1)
+			return -1;
+		// if 0 then continue to next char
+	}
+	return 0;
+	
 }
 
 // 1.2.4 Add the ls command
@@ -276,6 +322,7 @@ int my_ls()
 
 	// scan directory, filter out hidden files, and sort the files (see helper functions above)
 	// returns the number of files in the current directory
+	// https://lloydrochester.com/post/c/list-directory/
 	int numFiles = scandir(".", &files, filter, sort); 
 
 	// since already sorted, print files in array order
