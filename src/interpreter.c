@@ -258,6 +258,8 @@ int filter(const struct dirent *name)
 	return 1;
 }
 
+// helper function for my_ls
+// sorts the files in alphabetical order (nums, then caps, then min)
 int sort(const struct dirent **a, const struct dirent **b)
 {
 	return strcmp((*a)->d_name, (*b)->d_name);
@@ -268,14 +270,21 @@ int sort(const struct dirent **a, const struct dirent **b)
 int my_ls()
 {
 	// use dirent.h library to open and read the current directory
-	struct dirent **files;
-	int numFiles = scandir(".", &files, filter, sort);
 
+	// create a pointer to an array of pointers to store files in the current directory
+	struct dirent **files;
+
+	// scan directory, filter out hidden files, and sort the files (see helper functions above)
+	// returns the number of files in the current directory
+	int numFiles = scandir(".", &files, filter, sort); 
+
+	// since already sorted, print files in array order
 	for (int i = 0; i < numFiles; i++)
 	{
 		printf("%s\n", files[i]->d_name);
 	}
 
+	return 0;
 }
 
 // 1.2.4 Add the my_mkdir command

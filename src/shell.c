@@ -49,10 +49,11 @@ int parseInput(char ui[])
     int b;
     int w = 0; // wordID
     int errorCode;
-    if (ui[0] == NULL)
+
+    if (ui == NULL) // check if input is null (end of file)
     {
-        freopen("/dev/tty", "r", stdin);
-        return 1;
+        freopen("/dev/tty", "r", stdin);    // redirect stdin to terminal
+        return 1;                          // return 1 to indicate end of file (not successful)
     }
     for (a = 0; ui[a] == ' ' && a < 1000; a++); // skip white spaces
     while (ui[a] != '\n' && ui[a] != '\0' && a < 1000)  // loop through the input
