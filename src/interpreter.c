@@ -267,13 +267,13 @@ int compareChar(char a, char b)
 	// used cytpe.h library to determine if a char is a number, capital letter, or lowercase letter
 	// instead of using ASCII values to reduce clutter
 
-	if (isdigit(a) && isalpha(b))
+	if (isdigit(a) && isalpha(b)) // numbers before letters
 		return -1;
 	else if (isalpha(a) && isdigit(b))
 		return 1;
-	else if (isalpha(a) && isalpha(b))
+	else if (isalpha(a) && isalpha(b)) // when both are letters
 	{
-		if (tolower(a) == tolower(b))
+		if (tolower(a) == tolower(b)) // need logic to compare caps and min
 		{
 			if (isupper(a) && islower(b))
 				return -1;
@@ -281,7 +281,7 @@ int compareChar(char a, char b)
 				return 1;
 			else
 				return 0;
-		} else 
+		} else // if not the same letter then use ASCII values
 		{
 			if (tolower(a) < tolower(b))
 				return -1;
@@ -299,6 +299,7 @@ int sort(const struct dirent **a, const struct dirent **b)
 	const char *nameA = (*a)->d_name;
 	const char *nameB = (*b)->d_name;
 
+	// compare per char until a difference is found (i.e. not 0)
 	for (int i = 0; i < strlen(nameA) && i < strlen(nameB); i++)
 	{
 		if (compareChar(nameA[i], nameB[i]) == 1)
