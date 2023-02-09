@@ -3,6 +3,9 @@
 #include <string.h>
 #include <dirent.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "shellmemory.h"
 #include "shell.h"
 
@@ -62,12 +65,6 @@ int interpreter(char *command_args[], int args_size)
 			return badcommand();
 		return quit();
 	}
-
-	// OLD set command
-	// else if (strcmp(command_args[0], "set")==0) {
-	// 	//set
-	// 	if (args_size != 3) return badcommand();
-	// 	return set(command_args[1], command_args[2]);
 
 	// NEW  set command:DONE
 	// for 1.2.1 this needs to be changed to have a minimum of 3 (set VAR STRING) and maximum of 8 (STRING can be up to 5 tokens)
@@ -227,7 +224,7 @@ int run(char *script)
 // Done
 int echo(char *var)
 {
-	// check if first character of string is not a $ then just print the string
+	// if first character of string is not a $ then just print the string
 	if (var[0] != '$')
 	{
 		printf("%s\n", var);
@@ -236,15 +233,14 @@ int echo(char *var)
 
 	memmove(var, var + 1, strlen(var)); // remove the $ from the string
 
-	// if first character of string is a $, check if var is in shell memory
-	if (strcmp(mem_get_value(var), "Variable does not exist") == 0)
-	{
-		printf("\n");
-		return 0;
-	}
-	else
+	if (strcmp(mem_get_value(var), "Variable does not exist") != 0) // check if var is in shell memory
 	{
 		printf("%s\n", mem_get_value(var));
+		return 0;
+	}
+	else // if var is not in shell memory, print an empty line
+	{
+		printf("\n");
 		return 0;
 	}
 }
@@ -253,10 +249,10 @@ int echo(char *var)
 // filters out the hidden files
 int filter(const struct dirent *name)
 {
-  if (name->d_name[0] == '.')
-	return 0;
-  else
-	return 1;
+	if (name->d_name[0] == '.')
+		return 0;
+	else
+		return 1;
 }
 
 // helper function for sort
@@ -281,7 +277,8 @@ int compareChar(char a, char b)
 				return 1;
 			else
 				return 0;
-		} else // if not the same letter then use ASCII values
+		}
+		else // if not the same letter then use ASCII values
 		{
 			if (tolower(a) < tolower(b))
 				return -1;
@@ -289,7 +286,6 @@ int compareChar(char a, char b)
 				return 1;
 		}
 	}
-	
 }
 
 // helper function for my_ls
@@ -309,7 +305,6 @@ int sort(const struct dirent **a, const struct dirent **b)
 		// if 0 then continue to next char
 	}
 	return 0;
-	
 }
 
 // 1.2.4 Add the ls command
@@ -324,7 +319,7 @@ int my_ls()
 	// scan directory, filter out hidden files, and sort the files (see helper functions above)
 	// returns the number of files in the current directory
 	// https://lloydrochester.com/post/c/list-directory/
-	int numFiles = scandir(".", &files, filter, sort); 
+	int numFiles = scandir(".", &files, filter, sort);
 
 	// since already sorted, print files in array order
 	for (int i = 0; i < numFiles; i++)
@@ -339,6 +334,34 @@ int my_ls()
 // creates a new directory with the name dirname in the current directory.
 int my_mkdir(char *dirName)
 {
+
+	// check if dirname starts with a $
+	if (dirName[0] == '$')
+	{
+		memmove(dirName, dirName + 1, strlen(dirName)); // remove the $ from the string
+
+		// check if var is in shell memory
+		if (strcmp(mem_get_value(dirName), "Variable does not exist") != 0) // check if dirName is in shell memory
+		{
+			strcpy(dirName, mem_get_value(dirName)); // if it's in memory, copy the value to dirName
+		}
+		else
+		{
+			printf("Bad command: my_mkdir \n");
+			return 0;
+		}
+	}
+
+	// inspired from stackoverflow post:
+	// https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c
+	struct stat st = {0}; // used to check if directory exists
+
+	if (stat(dirName, &st) == -1) // if directory does not exist
+	{
+		mkdir(dirName, 0777); // 0777: Allows the owner, group, and others to read, write, and execute the directory.
+	}
+
+	return 0;
 }
 
 // 1.2.4 Add the my_touch filename command
