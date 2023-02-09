@@ -368,6 +368,8 @@ int my_mkdir(char *dirName)
 // creates a new empty file inside the current directory. filename is an alphanumeric string
 int my_touch(char *fileName)
 {
+	FILE *file = fopen(fileName, "w"); // create a new file with the name fileName, "w" means write only
+	fclose(file);
 }
 
 // 1.2.4 add the my_cd command
@@ -376,4 +378,11 @@ int my_touch(char *fileName)
 // inside the current directory. dirname should be an alphanumeric string
 int my_cd(char *dirName)
 {
+	int status = chdir(dirName); // attempt to change directory
+
+	if (status != 0)
+	{ // if directory does not exist
+		printf("Bad command: my_cd \n");
+		return 0;
+	}
 }
