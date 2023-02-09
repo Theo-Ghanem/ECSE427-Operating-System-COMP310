@@ -263,10 +263,10 @@ int compareChar(char a, char b)
 	// used cytpe.h library to determine if a char is a number, capital letter, or lowercase letter
 	// instead of using ASCII values to reduce clutter
 
-	if (isdigit(a) && isalpha(b)) // numbers before letters
-		return -1;
-	else if (isalpha(a) && isdigit(b))
-		return 1;
+	if (isdigit(a) && isalpha(b))	   // if a is a number and b is a letter
+		return -1;					   // a comes before b
+	else if (isalpha(a) && isdigit(b)) // if a is a letter and b is a number
+		return 1;					   // b comes before a
 	else if (isalpha(a) && isalpha(b)) // when both are letters
 	{
 		if (tolower(a) == tolower(b)) // need logic to compare caps and min
@@ -292,15 +292,15 @@ int compareChar(char a, char b)
 // sorts the files in alphabetical order (nums, then caps, then min)
 int sort(const struct dirent **a, const struct dirent **b)
 {
-	const char *nameA = (*a)->d_name;
-	const char *nameB = (*b)->d_name;
+	const char *nameA = (*a)->d_name; // get the name of the first file
+	const char *nameB = (*b)->d_name; // get the name of the second file
 
 	// compare per char until a difference is found (i.e. not 0)
 	for (int i = 0; i < strlen(nameA) && i < strlen(nameB); i++)
 	{
-		if (compareChar(nameA[i], nameB[i]) == 1)
+		if (compareChar(nameA[i], nameB[i]) == 1) // if 1 then nameA is after nameB
 			return 1;
-		else if (compareChar(nameA[i], nameB[i]) == -1)
+		else if (compareChar(nameA[i], nameB[i]) == -1) // if -1 then nameA is before nameB
 			return -1;
 		// if 0 then continue to next char
 	}
