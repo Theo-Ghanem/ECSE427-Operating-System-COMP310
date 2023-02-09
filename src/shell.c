@@ -55,34 +55,35 @@ int parseInput(char ui[])
         freopen("/dev/tty", "r", stdin); // redirect stdin to terminal
         return 1;                        // return 1 to indicate end of file (not successful)
     }
-    for (a = 0; ui[a] == ' ' && a < 1000; a++)
-        ;                                              // skip white spaces
+
     while (ui[a] != '\n' && ui[a] != '\0' && a < 1000) // loop through the input
     {
-        for (b = 0; ui[a] != ';' && ui[a] != '\0' && ui[a] != '\n' && ui[a] != ' ' && a < 1000; a++, b++) // loop through the word
+        for (; (ui[a] == ';' || ui[a] == ' ') && a < 1000; a++); // skip white spaces
+        
+        while (ui[a] != ';' && ui[a] != '\n' && ui[a] != '\0' && a < 1000) 
         {
-            tmp[b] = ui[a];
-            // extract a word
+            for (b = 0; ui[a] != ';' && ui[a] != '\0' && ui[a] != '\n' && ui[a] != ' ' && a < 1000; a++, b++) // loop through the word
+            {
+                tmp[b] = ui[a];
+                // extract a word
+            }
+            tmp[b] = '\0';          // terminate the word
+            words[w] = strdup(tmp); // copy the word to the array of words
+            w++;                    // increment wordID
+
+            if (ui[a] == '\0') // if end of input
+                break;
+            if (ui[a] != ';') // should not increment since inner while loop needs to speperate commands!
+                a++;
         }
-        tmp[b] = '\0';          // terminate the word
-        words[w] = strdup(tmp); // copy the word to the array of words
-        w++;                    // increment wordID
-
-        // Added this for 1.2.5 One-liners
-        //  if (ui[a] == ';') // if end of command
-        //  {
-        //      errorCode = interpreter(words, w); // send the word to the interpreter
-        //      if (errorCode == -1)
-        //          return errorCode;
-        //      w = 0;                          // reset wordID
-        //      memset(words, 0, sizeof words); // empty the array of words
-        //      memset(tmp, 0, sizeof tmp);     // empty the array of words
-        //  }
-
-        if (ui[a] == '\0') // if end of input
-            break;
-        a++;
+        errorCode = interpreter(words, w); // send the word to the interpreter
+        w = 0;
+        memset(words, 0, sizeof words); // empty the array of words
+        memset(tmp, 0, sizeof tmp);     // empty the array of words
+        sleep(1);
+        if (errorCode == -1)
+            return errorCode;
+        
     }
-    errorCode = interpreter(words, w); // send the word to the interpreter
     return errorCode;
 }
