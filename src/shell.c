@@ -73,13 +73,13 @@ int parseInput(char ui[])
 
             if (ui[a] == '\0') // if end of input
                 break;
-            if (ui[a] != ';') // should not increment since inner while loop needs to speperate commands!
+            if (ui[a] != ';') // should not increment for ';' since inner while loop needs to speperate one line commands!
                 a++;
         }
         errorCode = interpreter(words, w); // send the word to the interpreter
         w = 0;
-        memset(words, 0, sizeof words); // empty the array of words
-        memset(tmp, 0, sizeof tmp);     // empty the array of words
+        memset(words, 0, sizeof(words)); // empty the array of words
+        memset(tmp, 0, sizeof(tmp));     // empty the array of words
         sleep(1);
         if (errorCode == -1)
             return errorCode;

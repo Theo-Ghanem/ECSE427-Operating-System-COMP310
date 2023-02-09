@@ -285,11 +285,13 @@ int compareChar(char a, char b)
 			else
 				return 1;
 		}
-	} else {
+	}
+	else
+	{
 		if (tolower(a) < tolower(b))
-				return -1;
-			else
-				return 1;
+			return -1;
+		else
+			return 1;
 	}
 }
 
@@ -353,7 +355,7 @@ int my_mkdir(char *dirName)
 		else
 		{
 			printf("Bad command: my_mkdir \n");
-			return 0;
+			return 1;
 		}
 	}
 
@@ -375,6 +377,7 @@ int my_touch(char *fileName)
 {
 	FILE *file = fopen(fileName, "w"); // create a new file with the name fileName, "w" means write only
 	fclose(file);
+	return 0;
 }
 
 // 1.2.4 add the my_cd command
@@ -388,6 +391,7 @@ int my_cd(char *dirName)
 	if (status != 0)
 	{ // if directory does not exist
 		printf("Bad command: my_cd \n");
-		return 0;
+		return 1;
 	}
+	return 0;
 }
