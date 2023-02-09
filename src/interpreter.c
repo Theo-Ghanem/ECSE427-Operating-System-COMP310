@@ -285,6 +285,11 @@ int compareChar(char a, char b)
 			else
 				return 1;
 		}
+	} else {
+		if (tolower(a) < tolower(b))
+				return -1;
+			else
+				return 1;
 	}
 }
 
