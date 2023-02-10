@@ -48,7 +48,7 @@ int parseInput(char ui[])
     int a = 0;
     int b;
     int w = 0; // wordID
-    int errorCode;
+    int errorCode = 1;
 
     if (ui == NULL) // check if input is null (end of file)
     {
@@ -56,7 +56,7 @@ int parseInput(char ui[])
         return 1;                        // return 1 to indicate end of file (not successful)
     }
 
-    while (ui[a] != '\n' && ui[a] != '\0' && a < 1000) // loop through the input
+    while (ui[a] != '\0' && a < 1000) // loop through the input
     {
         for (; (ui[a] == ';' || ui[a] == ' ') && a < 1000; a++); // skip white spaces
         
@@ -83,7 +83,8 @@ int parseInput(char ui[])
         
         if (errorCode == -1)
             return errorCode;
-        
+        if (ui[a] == '\0' || ui[a] == '\n') // if end of input
+            break;
     }
     return errorCode;
 }

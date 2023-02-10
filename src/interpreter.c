@@ -387,16 +387,16 @@ int my_mkdir(char *dirName)
 		{
 			return badcommandMkdir();
 		}
+	}
 
 		// inspired from stackoverflow post:
 		// https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c
 		struct stat st = {0}; // used to check if directory exists
-
+		
 		if (stat(dirName, &st) == -1) // if directory does not exist
 		{
 			mkdir(dirName, 0777); // 0777: Allows the owner, group, and others to read, write, and execute the directory.
 		}
-	}
 	return 0;
 }
 
