@@ -9,7 +9,7 @@
 #include "shellmemory.h"
 #include "shell.h"
 
-int MAX_ARGS_SIZE = 8; // This was 3 initially, but changed to 8 for set function
+int MAX_ARGS_SIZE = 7; // This was 3 initially, but changed to 7 for set function
 
 int badcommand()
 {
@@ -22,6 +22,24 @@ int badcommandFileDoesNotExist()
 {
 	printf("%s\n", "Bad command: File not found");
 	return 3;
+}
+
+int badcommandTooManyTokens()
+{
+	printf("%s\n", "Bad command: Too many tokens");
+	return 1;
+}
+
+int badcommandMkdir()
+{
+	printf("%s\n", "Bad command: my_mkdir");
+	return 1;
+}
+
+int badcommandCd()
+{
+	printf("%s\n", "Bad command: my_cd");
+	return 1;
 }
 
 int help();
@@ -41,9 +59,13 @@ int interpreter(char *command_args[], int args_size)
 {
 	int i;
 
-	if (args_size < 1 || args_size > MAX_ARGS_SIZE)
+	if (args_size < 1)
 	{
 		return badcommand();
+	}
+	if (args_size > MAX_ARGS_SIZE)
+	{
+		return badcommandTooManyTokens();
 	}
 
 	for (i = 0; i < args_size; i++)
@@ -74,15 +96,17 @@ int interpreter(char *command_args[], int args_size)
 			return badcommand();
 		else if (args_size > 7)
 		{
-			printf("%s\n", "Bad Command: Too many tokens");
-			return 1;
+			return badcommandTooManyTokens();
 		}
 		char stringOfValues[1000];						   // intialize string to hold multiple tokens
 		memset(stringOfValues, 0, sizeof(stringOfValues)); // empty the string
-		for (int i = 2; i < args_size; i++)
+		for (int i = 2; i < args_size; i++)				   // start at 2 because 0 is set and 1 is the variable name
 		{
-			strcat(stringOfValues, command_args[i]);
-			strcat(stringOfValues, " ");
+			strcat(stringOfValues, command_args[i]); // add the token to the string
+			if (i != args_size - 1)
+			{
+				strcat(stringOfValues, " "); // add a space to the string
+			}
 		}
 
 		return set(command_args[1], stringOfValues); // need to be able to take more arguments //changed
@@ -350,25 +374,31 @@ int my_mkdir(char *dirName)
 		// check if var is in shell memory
 		if (strcmp(mem_get_value(dirName), "Variable does not exist") != 0) // check if dirName is in shell memory
 		{
+			char *space = strchr(mem_get_value(dirName), ' ');
+			if (space != NULL)
+			{
+				return badcommandMkdir();
+			}
+
 			strcpy(dirName, mem_get_value(dirName)); // if it's in memory, copy the value to dirName
 		}
+
 		else
 		{
-			printf("Bad command: my_mkdir \n");
-			return 1;
+			return badcommandMkdir();
 		}
+
+		// inspired from stackoverflow post:
+		// https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c
+		struct stat st = {0}; // used to check if directory exists
+
+		if (stat(dirName, &st) == -1) // if directory does not exist
+		{
+			mkdir(dirName, 0777); // 0777: Allows the owner, group, and others to read, write, and execute the directory.
+		}
+
+		return 0;
 	}
-
-	// inspired from stackoverflow post:
-	// https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c
-	struct stat st = {0}; // used to check if directory exists
-
-	if (stat(dirName, &st) == -1) // if directory does not exist
-	{
-		mkdir(dirName, 0777); // 0777: Allows the owner, group, and others to read, write, and execute the directory.
-	}
-
-	return 0;
 }
 
 // 1.2.4 Add the my_touch filename command
@@ -390,8 +420,7 @@ int my_cd(char *dirName)
 
 	if (status != 0)
 	{ // if directory does not exist
-		printf("Bad command: my_cd \n");
-		return 1;
+		return badcommandCd();
 	}
 	return 0;
 }
