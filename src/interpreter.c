@@ -396,9 +396,8 @@ int my_mkdir(char *dirName)
 		{
 			mkdir(dirName, 0777); // 0777: Allows the owner, group, and others to read, write, and execute the directory.
 		}
-
-		return 0;
 	}
+	return 0;
 }
 
 // 1.2.4 Add the my_touch filename command
