@@ -80,7 +80,7 @@ int parseInput(char ui[])
         w = 0;
         memset(words, 0, sizeof(words)); // empty the array of words
         memset(tmp, 0, sizeof(tmp));     // empty the array of words
-        sleep(1);
+        
         if (errorCode == -1)
             return errorCode;
         
