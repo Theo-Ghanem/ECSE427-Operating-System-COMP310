@@ -32,10 +32,13 @@ int main(int argc, char *argv[])
         }
 
         fgets(userInput, MAX_USER_INPUT - 1, stdin); // get user input
-        errorCode = parseInput(userInput);
-        if (errorCode == -1)
-            exit(99); // ignore all other errors
-        memset(userInput, 0, sizeof(userInput));
+        if (strlen(userInput) > 0)
+        {
+            errorCode = parseInput(userInput);
+            if (errorCode == -1)
+                exit(99); // ignore all other errors
+            memset(userInput, 0, sizeof(userInput));
+        }
     }
 
     return 0;
@@ -58,9 +61,10 @@ int parseInput(char ui[])
 
     while (ui[a] != '\0' && a < 1000) // loop through the input
     {
-        for (; (ui[a] == ';' || ui[a] == ' ') && a < 1000; a++); // skip white spaces
-        
-        while (ui[a] != ';' && ui[a] != '\n' && ui[a] != '\0' && a < 1000) 
+        for (; (ui[a] == ';' || ui[a] == ' ') && a < 1000; a++)
+            ; // skip white spaces
+
+        while (ui[a] != ';' && ui[a] != '\n' && ui[a] != '\0' && a < 1000)
         {
             for (b = 0; ui[a] != ';' && ui[a] != '\0' && ui[a] != '\n' && ui[a] != ' ' && a < 1000; a++, b++) // loop through the word
             {
@@ -80,7 +84,7 @@ int parseInput(char ui[])
         w = 0;
         memset(words, 0, sizeof(words)); // empty the array of words
         memset(tmp, 0, sizeof(tmp));     // empty the array of words
-        
+
         if (errorCode == -1)
             return errorCode;
         if (ui[a] == '\0' || ui[a] == '\n') // if end of input
