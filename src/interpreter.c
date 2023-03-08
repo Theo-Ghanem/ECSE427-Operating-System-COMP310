@@ -89,8 +89,7 @@ int interpreter(char *command_args[], int args_size)
 		return quit();
 	}
 
-	// NEW  set command:DONE
-	// for 1.2.1 this needs to be changed to have a minimum of 3 (set VAR STRING) and maximum of 8 (STRING can be up to 5 tokens)
+	// set
 	else if (strcmp(command_args[0], "set") == 0)
 	{
 		if (args_size < 3)
@@ -112,6 +111,7 @@ int interpreter(char *command_args[], int args_size)
 
 		return set(command_args[1], stringOfValues); // need to be able to take more arguments //changed
 	}
+
 	else if (strcmp(command_args[0], "print") == 0)
 	{
 		// print
@@ -119,6 +119,7 @@ int interpreter(char *command_args[], int args_size)
 			return badcommand();
 		return print(command_args[1]);
 	}
+
 	else if (strcmp(command_args[0], "run") == 0)
 	{
 		// run
@@ -195,7 +196,6 @@ int quit()
 }
 
 // 1.2.1 Enhance the set command
-// DONE
 int set(char *var, char *value)
 {
 	char *link = "=";
@@ -218,18 +218,17 @@ int print(char *var)
 int run(char *script)
 {
 	int errCode = 0;
-	
+
 	// load code into memory
 	errCode = mem_load_script(script);
-	
+
 	// create PCB
-	
+	SCRIPT_PCB *pcb = create_script_pcb(0, 0, strlen(script)); // need to check what our pid should be
 
 	return errCode;
 }
 
 // 1.2.2 Add the echo command
-// Done
 int echo(char *var)
 {
 	// if first character of string is not a $ then just print the string
@@ -373,14 +372,14 @@ int my_mkdir(char *dirName)
 		}
 	}
 
-		// inspired from stackoverflow post:
-		// https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c
-		struct stat st = {0}; // used to check if directory exists
-		
-		if (stat(dirName, &st) == -1) // if directory does not exist
-		{
-			mkdir(dirName, 0777); // 0777: Allows the owner, group, and others to read, write, and execute the directory.
-		}
+	// inspired from stackoverflow post:
+	// https://stackoverflow.com/questions/7430248/creating-a-new-directory-in-c
+	struct stat st = {0}; // used to check if directory exists
+
+	if (stat(dirName, &st) == -1) // if directory does not exist
+	{
+		mkdir(dirName, 0777); // 0777: Allows the owner, group, and others to read, write, and execute the directory.
+	}
 	return 0;
 }
 

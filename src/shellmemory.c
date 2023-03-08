@@ -126,7 +126,7 @@ int mem_load_script(char *script)
 	int contiguousFreeLines = 0;
 	for (int i = 0; i < 1000 && contiguousFreeLines <= lines; i++)
 	{
-		if (strcmp(shellmemory[i].var, "none") == 0)
+		if (strcmp(shellmemory[i].var, "none") == 0) // if the line is free
 		{
 			contiguousFreeLines++;
 		}

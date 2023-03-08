@@ -7,6 +7,8 @@
 
 // THIS CODE IS NOT COMPLETE. IT IS ONLY A SNIPPET OF THE CODE THAT WILL BE USED TO IMPLEMENT THE SCHEDULER.
 
+// put all of this in a function called scheduler
+
 READY_QUEUE *ready_queue = create_ready_queue();      // create the ready queue
 SCRIPT_PCB *script_pcb = create_script_pcb(1, 0, 10); // create the SCRIPT PCB with PID 1, starting at memory location 0, and with 10 instructions
 enqueue_ready_queue(ready_queue, script_pcb);         // add the SCRIPT PCB to the tail of the ready queue
@@ -23,8 +25,8 @@ while (running)
 
     int current_instruction = current_pcb->current_instruction;                        // get the current instruction of the PCB
     char *instruction = get_instruction(current_pcb->start_pos + current_instruction); // get the instruction from the interpreter
-    execute_instruction(instruction);                                                  // execute the instruction
-    free(instruction);                                                                 // free the memory allocated for the instruction
+    execute_instruction(instruction);                                                  // NEED TO FIGURE OUT HOW TO EXECUTE INSTRUCTION
+    free(instruction);                                                                 // NOT SURE IF WE NEED TO FREE THE MEM FOR THE INSTRUCTION
 
     current_pcb->current_instruction++; // move the current instruction pointer of the PCB to the next instruction
     if (current_pcb->current_instruction >= current_pcb->script_len)
