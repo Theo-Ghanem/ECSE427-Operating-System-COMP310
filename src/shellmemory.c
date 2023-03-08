@@ -96,7 +96,7 @@ char *mem_get_value(char *var_in)
 }
 
 // A2 1.2.1 Code loading I think
-int mem_load_script(char *script)
+int mem_load_script(char *script, int *memLocation, int *memSize)
 {
 
 	int errCode = 0;
@@ -154,6 +154,9 @@ int mem_load_script(char *script)
 	}
 
 	fclose(p);
+
+	*memLocation = startLine;
+	*memSize = lines;
 
 	return errCode;
 }

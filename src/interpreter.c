@@ -218,12 +218,14 @@ int print(char *var)
 int run(char *script)
 {
 	int errCode = 0;
+	int scriptLineSize;
+	int scriptLocation;
 
 	// load code into memory
-	errCode = mem_load_script(script);
+	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
 
 	// create PCB
-	SCRIPT_PCB *pcb = create_script_pcb(0, 0, strlen(script)); // need to check what our pid should be
+	SCRIPT_PCB *pcb = create_script_pcb(0, scriptLocation, scriptLineSize); // need to check what our pid should be
 
 	return errCode;
 }
