@@ -160,3 +160,17 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 
 	return errCode;
 }
+
+// A2 1.2.1 Freeing memory
+int mem_free_script(int memLocation, int memSize)
+{
+	int errCode = 0;
+
+	for (int i = memLocation; i < memLocation + memSize; i++)
+	{
+		shellmemory[i].var = "none";
+		shellmemory[i].value = "none";
+	}
+
+	return errCode;
+}

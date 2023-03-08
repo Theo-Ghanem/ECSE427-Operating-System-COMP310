@@ -43,6 +43,12 @@ int badcommandCd()
 	return 1;
 }
 
+badcommandExec()
+{
+	printf("%s\n", "Bad command: exec");
+	return 1;
+}
+
 int help();
 int quit();
 int set(char *var, char *value);
@@ -54,6 +60,7 @@ int my_ls();
 int my_mkdir(char *dirName);
 int my_touch(char *fileName);
 int my_cd(char *dirName);
+int exec(char *progs[], int numProgs, char *pol);
 
 // Interpret commands and their arguments
 int interpreter(char *command_args[], int args_size)
@@ -172,6 +179,25 @@ int interpreter(char *command_args[], int args_size)
 		return my_cd(command_args[1]);
 	}
 
+	// exec
+	else if (strcmp(command_args[0], "exec") == 0)
+	{
+		if (args_size < 3)
+			return badcommand();
+		else if (args_size > 6)
+		{
+			return badcommandTooManyTokens();
+		}
+
+		char progs[args_size - 3];
+		for (int i = 1, j = 0; i < args_size - 1; i++, j++)
+		{
+			progs[j] = command_args[i];
+		}
+
+		return exec(progs, args_size - 3, command_args[args_size - 1]); // need to be able to take more arguments //changed
+	}
+
 	else
 		return badcommand();
 }
@@ -215,17 +241,38 @@ int print(char *var)
 	return 0;
 }
 
-int run(char *script)
+// Helper functions to load code into memory, create PCB and add it to the ready queue
+// without explicitly running it
+int loadScript(char *script)
 {
 	int errCode = 0;
 	int scriptLineSize;
 	int scriptLocation;
+	int pc = 0;
 
 	// load code into memory
 	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
 
 	// create PCB
-	SCRIPT_PCB *pcb = create_script_pcb(0, scriptLocation, scriptLineSize); // need to check what our pid should be
+	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
+	errCode = create_script_pcb(pcb, &scriptLocation, &scriptLineSize);
+
+	return errCode;
+}
+
+int run(char *script)
+{
+	int errCode = 0;
+	int scriptLineSize;
+	int scriptLocation;
+	int pc = 0;
+
+	// load code into memory
+	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
+
+	// create PCB
+	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
+	errCode = create_script_pcb(pcb, &scriptLocation, &scriptLineSize);
 
 	return errCode;
 }
@@ -407,4 +454,28 @@ int my_cd(char *dirName)
 		return badcommandCd();
 	}
 	return 0;
+}
+
+// A2 1.2.2 Exec command
+// executes the programs specified in the command line concurrently
+int exec(char *progs[], int numProgs, char *pol)
+{
+	int errCode = 0;
+
+	// check if policy is valid
+	if (strcmp(pol, "FCFS") != 0 && strcmp(pol, "RR") != 0 && strcmp(pol, "SJF") != 0 && strcmp(pol, "AGING") != 0)
+	{
+		return badcommandExec();
+	}
+
+	// load all scripts into memory and add them to the ready queue
+	for (int i = 0; i < numProgs; i++)
+	{
+		loadScript(progs[i]); 
+	}
+
+	// run the scheduler
+	
+
+	return errCode;
 }

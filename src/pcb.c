@@ -3,20 +3,18 @@
 // Parts of this code were inspired from a combination of stackoverflow and chatGPT
 
 // Function to create a new PCB with the given PID, start position, and script length
-SCRIPT_PCB *create_script_pcb(int pid, int start_pos, int script_len)
-{
-    // Allocate memory for the new PCB
-    SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
+int pid_counter = 0;
 
+int *create_script_pcb(SCRIPT_PCB *pcb, int start_pos, int script_len)
+{
     // Set the fields of the new PCB
-    pcb->pid = pid;
+    pcb->pid = pid_counter++;
     pcb->start_pos = start_pos;
     pcb->script_len = script_len;
-    pcb->current_instruction = start_pos;
+    pcb->current_instruction = 0;
     pcb->next = NULL;
-
-    // Return the new PCB
-    return pcb;
+    
+    return 0;
 }
 
 // Function to free the memory allocated to a PCB
