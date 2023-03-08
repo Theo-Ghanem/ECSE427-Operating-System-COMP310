@@ -220,7 +220,7 @@ int run(char *script)
 	int errCode = 0;
 	
 	// load code into memory
-	errCode = mem_load_script(*script);
+	errCode = mem_load_script(script);
 	
 	// create PCB
 	

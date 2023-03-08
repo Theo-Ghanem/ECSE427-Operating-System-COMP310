@@ -96,7 +96,7 @@ char *mem_get_value(char *var_in)
 }
 
 // A2 1.2.1 Code loading I think
-void mem_load_script(char *script)
+int mem_load_script(char *script)
 {
 
 	int errCode = 0;
@@ -105,7 +105,7 @@ void mem_load_script(char *script)
 
 	if (p == NULL) // if the file does not exist
 	{
-		return badcommandFileDoesNotExist();
+		return 1;
 	}
 
 	// count number of lines in file to find contiguous space in memory for it
