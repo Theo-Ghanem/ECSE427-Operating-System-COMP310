@@ -61,7 +61,7 @@ int my_ls();
 int my_mkdir(char *dirName);
 int my_touch(char *fileName);
 int my_cd(char *dirName);
-int exec(char *progs[], int numProgs, char *pol);
+int exec(char *progs[], int argSize, char *pol);
 
 // Interpret commands and their arguments
 int interpreter(char *command_args[], int args_size)
@@ -190,15 +190,7 @@ int interpreter(char *command_args[], int args_size)
 			return badcommandTooManyTokens();
 		}
 
-		// TODO Make sure that this is the correct way to do 2d string arrays
-		char *progs[args_size - 2];
-		for (int i = 1, j = 0; i < args_size - 1; i++, j++)
-		{
-			// TODO make sure entire string is copied into 2d string array
-			progs[j] = command_args[i];
-		}
-
-		return exec(progs, args_size - 2, command_args[args_size - 1]);
+		return exec(command_args, args_size, command_args[args_size - 1]);
 	}
 
 	else
@@ -248,13 +240,18 @@ int print(char *var)
 // without explicitly running it
 int loadScript(char *script)
 {
-	printf("loading script");
 	int errCode = 0;
 	int scriptLineSize;
 	int scriptLocation;
 
 	// load code into memory
 	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
+
+	if (errCode != 0)
+	{
+		printf("error loading script into memory: %d\n", errCode);
+		return errCode;
+	}
 
 	printf("creating pcb");
 	// create PCB
@@ -289,7 +286,6 @@ int echo(char *var)
 	// if first character of string is not a $ then just print the string
 	if (var[0] != '$')
 	{
-		printf("THE CODE IS ENTERING HERE 1\n");
 		printf("%s\n", var);
 		return 0;
 	}
@@ -298,13 +294,11 @@ int echo(char *var)
 
 	if (strcmp(mem_get_value(var), "Variable does not exist") != 0) // check if var is in shell memory
 	{
-		printf("THE CODE IS ENTERING HERE 2\n");
 		printf("%s\n", mem_get_value(var));
 		return 0;
 	}
 	else // if var is not in shell memory, print an empty line
 	{
-		printf("THE CODE IS ENTERING HERE 3\n");
 		printf("\n");
 		return 0;
 	}
@@ -467,7 +461,7 @@ int my_cd(char *dirName)
 
 // A2 1.2.2 Exec command
 // executes the programs specified in the command line concurrently
-int exec(char *progs[], int numProgs, char *pol)
+int exec(char *args[], int argSize, char *pol)
 {
 	printf("in exec\n");
 	int errCode = 0;
@@ -478,27 +472,14 @@ int exec(char *progs[], int numProgs, char *pol)
 		return badcommandExec();
 	}
 
-	printf("num programs: %d\n", numProgs);
+	printf("num programs: %d\n", argSize - 2);
 
 	// load all scripts into memory and add them to the ready queue
-	for (int i = 0; i < numProgs; i++)
+	for (int i = 1; i < argSize - 1; i++)
 	{
-		printf("prog name: %s\n", progs[i]);
-		char *temp = malloc(strlen(progs[i]) + 1);
-		strcpy(temp, progs[i]);
-		if (temp == NULL)
-		{
-			printf("Failed to allocate memory for temp.\n");
-			return -1;
-		}
-
-		// Copy string from progs[i] to temp
-		strcpy(temp, progs[i]);
-		printf("temp: '%s'\n", temp);
-		// TODO this is where the error is (make sure the passed in var is the entire name of the file char *name)
-		loadScript(temp);
+		printf("loading script %s\n", args[i]);
+		loadScript(args[i]);
 		printf("loaded script\n");
-		free(temp);
 	}
 
 	sleep(5);

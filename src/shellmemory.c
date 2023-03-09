@@ -106,6 +106,7 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 
 	if (p == NULL) // if the file does not exist
 	{
+		printf("File does not exist\n");
 		return 1;
 	}
 
@@ -148,7 +149,7 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 		char ind[20];
 		sprintf(ind, "%d", index);
 		char *name = strcat(script, strcat("_", ind));
-		printf ("mem: %s\n", name);
+		printf("mem: %s\n", name);
 		shellmemory[currentLine].var = strdup(name);
 		shellmemory[currentLine].value = strdup(line);
 

@@ -86,10 +86,10 @@ int parseInput(char ui[])
                 a++;
         }
 
-        for (int i = 0; i < w; i++) //debugging
-            printf("word %d: %s  \n", i, words[i]); // debugging
+        // for (int i = 0; i < w; i++) //debugging
+        //     printf("word %d: %s  \n", i, words[i]); // debugging
 
-        errorCode = interpreter(words, w);          // send the word to the interpreter
+        errorCode = interpreter(words, w); // send the word to the interpreter
         w = 0;
         memset(words, 0, sizeof(words)); // empty the array of words
         memset(tmp, 0, sizeof(tmp));     // empty the array of words
