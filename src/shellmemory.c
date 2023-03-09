@@ -143,7 +143,10 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 	for (int currentLine = startLine; currentLine < startLine + lines; currentLine++)
 	{
 		// naming: filename_lineNumber
-		char *name = strcat(script, "_") + currentLine;
+		int index = currentLine - startLine;
+		char ind[20];
+		itoa(&index, ind, 10);
+		char *name = strcat(script, strcat("_", ind));
 		shellmemory[currentLine].var = strdup(name);
 		shellmemory[currentLine].value = strdup(line);
 

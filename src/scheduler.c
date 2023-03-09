@@ -18,7 +18,7 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
 
     char *instr = strcat(name, "_") + current_instruction;
 
-    char* token = mem_get_value(instr);
+    char *token = mem_get_value(instr);
 
     if (token == NULL)
     {
@@ -32,12 +32,11 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
     return errCode;
 }
 
-
 // First come first serve scheduling policy
 // runs processes in the order they arrive until all processes are complete
 int fcfs()
 {
-    printf("Running FCFS scheduler");
+    printf("Running FCFS scheduler\n");
     int errCode = 0;
 
     while (ready_queue_is_empty() != 1)
@@ -53,6 +52,7 @@ int fcfs()
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
+            printf("this is the instruction:%s ", instruction); // debugging
             parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
@@ -84,7 +84,7 @@ int aging()
     return errCode;
 }
 
-int startScheduler(char* policy)
+int startScheduler(char *policy)
 {
     int errCode = 0;
     if (strcmp(policy, "FCFS") == 0)

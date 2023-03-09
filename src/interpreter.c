@@ -272,7 +272,6 @@ int run(char *script)
 	// load code into memory
 	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
 
-
 	// create PCB
 	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
 	errCode = create_script_pcb(pcb, script, scriptLocation, scriptLineSize);
@@ -289,6 +288,7 @@ int echo(char *var)
 	// if first character of string is not a $ then just print the string
 	if (var[0] != '$')
 	{
+		printf("THE CODE IS ENTERING HERE 1\n");
 		printf("%s\n", var);
 		return 0;
 	}
@@ -297,11 +297,13 @@ int echo(char *var)
 
 	if (strcmp(mem_get_value(var), "Variable does not exist") != 0) // check if var is in shell memory
 	{
+		printf("THE CODE IS ENTERING HERE 2\n");
 		printf("%s\n", mem_get_value(var));
 		return 0;
 	}
 	else // if var is not in shell memory, print an empty line
 	{
+		printf("THE CODE IS ENTERING HERE 3\n");
 		printf("\n");
 		return 0;
 	}
@@ -481,7 +483,7 @@ int exec(char progs[], int numProgs, char *pol)
 	for (int i = 0; i < numProgs; i++)
 	{
 		printf("%c", progs[i]);
-		loadScript(&progs[i]); 
+		loadScript(&progs[i]);
 	}
 
 	sleep(10);

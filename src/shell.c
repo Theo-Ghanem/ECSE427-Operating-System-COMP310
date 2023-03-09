@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
     // init shell memory
     mem_init();
 
-    //init the ready queue [For Assignment 2]
-    queue_init(); 
-    
+    // init the ready queue [For Assignment 2]
+    queue_init();
+
     while (1)
     {
         if (isatty(STDIN_FILENO)) // check if stdin is a terminal
@@ -85,7 +85,9 @@ int parseInput(char ui[])
             if (ui[a] != ';') // should not increment for ';' since inner while loop needs to speperate one line commands!
                 a++;
         }
-        errorCode = interpreter(words, w); // send the word to the interpreter
+        for (int i = 0; i < w; i++)
+            printf("word %d: %s  \n", i, words[i]); // debugging
+        errorCode = interpreter(words, w);          // send the word to the interpreter
         w = 0;
         memset(words, 0, sizeof(words)); // empty the array of words
         memset(tmp, 0, sizeof(tmp));     // empty the array of words
