@@ -1,6 +1,17 @@
 #include <stdlib.h>
 #include "ready_queue.h"
+#include "pcb.h"
 // Parts of this code were inspired from a combination of stackoverflow and chatGPT
+
+
+// Declare a global ready queue
+READY_QUEUE *ready_queue;
+
+// Function to initialize the global ready queue
+void queue_init() {
+    // Create a new ready queue and assign it to the global variable
+    ready_queue = create_ready_queue();
+}
 
 // Function to create a new ready queue
 READY_QUEUE *create_ready_queue()
@@ -16,7 +27,7 @@ READY_QUEUE *create_ready_queue()
 }
 
 // Function to add a new PCB to the end of the ready queue
-void enqueue_ready_queue(READY_QUEUE *ready_queue, SCRIPT_PCB *pcb)
+void enqueue_ready_queue(SCRIPT_PCB *pcb)
 {
     // If the ready queue is empty, set the head to the new PCB
     if (ready_queue->head == NULL)
@@ -36,7 +47,7 @@ void enqueue_ready_queue(READY_QUEUE *ready_queue, SCRIPT_PCB *pcb)
 }
 
 // Function to remove and return the first PCB in the ready queue
-SCRIPT_PCB *dequeue_ready_queue(READY_QUEUE *ready_queue)
+SCRIPT_PCB *dequeue_ready_queue()
 {
     // If the ready queue is empty, return null
     if (ready_queue->head == NULL)
@@ -53,8 +64,13 @@ SCRIPT_PCB *dequeue_ready_queue(READY_QUEUE *ready_queue)
     }
 }
 
+int ready_queue_is_empty()
+{
+    return ready_queue->head == NULL;
+}
+
 // Function to free the memory allocated to a ready queue
-void destroy_ready_queue(READY_QUEUE *ready_queue)
+void destroy_ready_queue()
 {
     // Free all the PCBs in the ready queue
     SCRIPT_PCB *current = ready_queue->head;

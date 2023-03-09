@@ -9,6 +9,7 @@
 #include "shellmemory.h"
 #include "shell.h"
 #include "pcb.h"
+#include "scheduler.h"
 
 int MAX_ARGS_SIZE = 7; // This was 3 initially, but changed to 7 for set function
 
@@ -43,7 +44,7 @@ int badcommandCd()
 	return 1;
 }
 
-badcommandExec()
+int badcommandExec()
 {
 	printf("%s\n", "Bad command: exec");
 	return 1;
@@ -60,7 +61,7 @@ int my_ls();
 int my_mkdir(char *dirName);
 int my_touch(char *fileName);
 int my_cd(char *dirName);
-int exec(char *progs[], int numProgs, char *pol);
+int exec(char progs[], int numProgs, char *pol);
 
 // Interpret commands and their arguments
 int interpreter(char *command_args[], int args_size)
@@ -184,18 +185,18 @@ int interpreter(char *command_args[], int args_size)
 	{
 		if (args_size < 3)
 			return badcommand();
-		else if (args_size > 6)
+		else if (args_size > 5)
 		{
 			return badcommandTooManyTokens();
 		}
 
-		char progs[args_size - 3];
+		char progs[args_size - 2];
 		for (int i = 1, j = 0; i < args_size - 1; i++, j++)
 		{
-			progs[j] = command_args[i];
+			progs[j] = *command_args[i];
 		}
 
-		return exec(progs, args_size - 3, command_args[args_size - 1]); // need to be able to take more arguments //changed
+		return exec(progs, args_size - 2, command_args[args_size - 1]);
 	}
 
 	else
@@ -250,12 +251,14 @@ int loadScript(char *script)
 	int scriptLocation;
 	int pc = 0;
 
+	printf("loading script");
 	// load code into memory
 	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
 
+	printf("creating pcb");
 	// create PCB
 	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
-	errCode = create_script_pcb(pcb, &scriptLocation, &scriptLineSize);
+	errCode = create_script_pcb(pcb, script, scriptLocation, scriptLineSize);
 
 	return errCode;
 }
@@ -265,14 +268,17 @@ int run(char *script)
 	int errCode = 0;
 	int scriptLineSize;
 	int scriptLocation;
-	int pc = 0;
 
 	// load code into memory
 	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
 
+
 	// create PCB
 	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
-	errCode = create_script_pcb(pcb, &scriptLocation, &scriptLineSize);
+	errCode = create_script_pcb(pcb, script, scriptLocation, scriptLineSize);
+
+	// run the scheduler
+	startScheduler("FCFS");
 
 	return errCode;
 }
@@ -458,8 +464,9 @@ int my_cd(char *dirName)
 
 // A2 1.2.2 Exec command
 // executes the programs specified in the command line concurrently
-int exec(char *progs[], int numProgs, char *pol)
+int exec(char progs[], int numProgs, char *pol)
 {
+	printf("in exec\n");
 	int errCode = 0;
 
 	// check if policy is valid
@@ -468,14 +475,18 @@ int exec(char *progs[], int numProgs, char *pol)
 		return badcommandExec();
 	}
 
+	printf("num programs: %d\n", numProgs);
+
 	// load all scripts into memory and add them to the ready queue
 	for (int i = 0; i < numProgs; i++)
 	{
-		loadScript(progs[i]); 
+		printf("%c", progs[i]);
+		loadScript(&progs[i]); 
 	}
 
+	sleep(10);
 	// run the scheduler
-	
+	startScheduler(pol);
 
 	return errCode;
 }

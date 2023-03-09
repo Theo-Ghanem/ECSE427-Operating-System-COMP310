@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "ready_queue.h": "c",
+        "stdlib.h": "c",
+        "stat.h": "c"
+    }
+}

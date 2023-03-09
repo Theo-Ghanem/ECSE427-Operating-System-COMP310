@@ -1,42 +1,113 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ready_queue.h"
-#include "interpreter.h"
+#include "shell.h"
 #include "pcb.h"
-// Parts of this code were inspired from a combination of stackoverflow and chatGPT
+#include "shellmemory.h"
 
-// THIS CODE IS NOT COMPLETE. IT IS ONLY A SNIPPET OF THE CODE THAT WILL BE USED TO IMPLEMENT THE SCHEDULER.
-
-// put all of this in a function called scheduler
-
-READY_QUEUE *ready_queue = create_ready_queue();      // create the ready queue
-SCRIPT_PCB *script_pcb = create_script_pcb(1, 0, 10); // create the SCRIPT PCB with PID 1, starting at memory location 0, and with 10 instructions
-enqueue_ready_queue(ready_queue, script_pcb);         // add the SCRIPT PCB to the tail of the ready queue
-
-int running = 1; // flag to indicate if there are still processes in the ready queue
-while (running)
+int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
-    SCRIPT_PCB *current_pcb = dequeue_ready_queue(ready_queue); // get the PCB at the head of the ready queue
-    if (current_pcb == NULL)
-    { // if there are no more PCBs in the ready queue, exit the loop
-        running = 0;
-        break;
+    int errCode = 0;
+
+    if (current_instruction >= script_len)
+    {
+        errCode = 1;
+        return errCode;
     }
 
-    int current_instruction = current_pcb->current_instruction;                        // get the current instruction of the PCB
-    char *instruction = get_instruction(current_pcb->start_pos + current_instruction); // get the instruction from the interpreter
-    execute_instruction(instruction);                                                  // NEED TO FIGURE OUT HOW TO EXECUTE INSTRUCTION
-    free(instruction);                                                                 // NOT SURE IF WE NEED TO FREE THE MEM FOR THE INSTRUCTION
+    char *instr = strcat(name, "_") + current_instruction;
 
-    current_pcb->current_instruction++; // move the current instruction pointer of the PCB to the next instruction
-    if (current_pcb->current_instruction >= current_pcb->script_len)
-    { // if the PCB has finished executing, free its memory and move on to the next process in the ready queue
-        free_script_pcb(current_pcb);
+    char* token = mem_get_value(instr);
+
+    if (token == NULL)
+    {
+        errCode = 1;
     }
     else
-    { // if the PCB has not finished executing, add it back to the tail of the ready queue
-        enqueue_ready_queue(ready_queue, current_pcb);
+    {
+        strcpy(instruction, token);
     }
+
+    return errCode;
 }
 
-destroy_ready_queue(ready_queue); // free the memory allocated for the ready queue
+
+// First come first serve scheduling policy
+// runs processes in the order they arrive until all processes are complete
+int fcfs()
+{
+    printf("Running FCFS scheduler");
+    int errCode = 0;
+
+    while (ready_queue_is_empty() != 1)
+    {
+        SCRIPT_PCB *current_pcb = dequeue_ready_queue();
+        char *instruction = malloc(sizeof(char) * 100);
+        int start_pos = current_pcb->start_pos;
+        int script_len = current_pcb->script_len;
+        char *name = current_pcb->name;
+        int current_instruction = 0;
+        while (current_instruction < script_len)
+        {
+            current_instruction = current_pcb->current_instruction;
+            char *instruction = malloc(sizeof(char) * 100);
+            errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
+            parseInput(instruction);
+            free(instruction);
+            increment_instruction(current_pcb);
+        }
+        mem_free_script(start_pos, script_len);
+    }
+
+    return errCode;
+}
+
+int rr()
+{
+    int errCode = 0;
+
+    return errCode;
+}
+
+int sjf()
+{
+    int errCode = 0;
+
+    return errCode;
+}
+
+int aging()
+{
+    int errCode = 0;
+
+    return errCode;
+}
+
+int startScheduler(char* policy)
+{
+    int errCode = 0;
+    if (strcmp(policy, "FCFS") == 0)
+    {
+        errCode = fcfs();
+    }
+    else if (strcmp(policy, "RR") == 0)
+    {
+        errCode = rr();
+    }
+    else if (strcmp(policy, "SJF") == 0)
+    {
+        errCode = sjf();
+    }
+    else if (strcmp(policy, "AGING") == 0)
+    {
+        errCode = aging();
+    }
+    else
+    {
+        printf("Invalid scheduling policy. Please try again.\n");
+        errCode = 1;
+    }
+
+    return errCode;
+}

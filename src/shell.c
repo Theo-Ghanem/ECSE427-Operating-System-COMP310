@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "interpreter.h"
 #include "shellmemory.h"
+#include "ready_queue.h"
 
 int MAX_USER_INPUT = 1000;
 int parseInput(char ui[]);
@@ -24,6 +25,10 @@ int main(int argc, char *argv[])
 
     // init shell memory
     mem_init();
+
+    //init the ready queue [For Assignment 2]
+    queue_init(); 
+    
     while (1)
     {
         if (isatty(STDIN_FILENO)) // check if stdin is a terminal

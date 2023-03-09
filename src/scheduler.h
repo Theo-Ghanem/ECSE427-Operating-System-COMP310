@@ -1,4 +1,8 @@
+#ifndef SCHEDULER_H
+#define SCHEDULER_H
+
 #include "ready_queue.h"
 
 // Function to run the scheduler
-void run_scheduler(READY_QUEUE *ready_queue);
+void startScheduler(char *pol);
+#endif
