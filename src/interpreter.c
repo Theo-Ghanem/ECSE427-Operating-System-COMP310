@@ -460,19 +460,62 @@ int exec(char *args[], int argSize, char *pol)
 	int errCode = 0;
 
 	// check if policy is valid
-	if (strcmp(pol, "FCFS") != 0 && strcmp(pol, "RR") != 0 && strcmp(pol, "SJF") != 0 && strcmp(pol, "AGING") != 0)
+	if (strcmp(pol, "FCFS") != 0 && strcmp(pol, "SJF") != 0 && strcmp(pol, "RR") != 0 && strcmp(pol, "AGING") != 0)
 	{
 		return badcommandExec();
 	}
 
-	// printf("num programs: %d\n", argSize - 2);
-
-	// load all scripts into memory and add them to the ready queue
-	for (int i = 1; i < argSize - 1; i++)
+	else if (strcmp(pol, "FCFS") == 0)
 	{
-		// printf("loading script %s\n", args[i]);
-		loadScript(args[i]);
-		// printf("loaded script\n");
+		// load all scripts into memory and add them to the ready queue
+		for (int i = 1; i < argSize - 1; i++)
+		{
+			loadScript(args[i]);
+		}
+	}
+	// print all elements of args[]
+	for (int i = 1; i < argSize - 1; i++)
+
+		// For Shortest Job First, we use the number of lines of code in each program to estimate the job length.
+		// The program with the fewest lines of code is enqueued first so it can be executed first.
+		else if (strcmp(pol, "SJF") == 0)
+		{
+			// compare all scripts and reorder them in ascending order of length
+			for (int i = 1; i < argSize - 1; i++)
+			{
+				for (int j = i + 1; j < argSize - 1; j++)
+				{
+					if ((strlen(args[i])) > strlen(args[j])) // if script i is longer than script j
+					{
+						char *temp = args[i];
+						args[i] = args[j];
+						args[j] = temp;
+					}
+				}
+			}
+
+			for (int i = 1; i < argSize - 1; i++)
+			{
+				loadScript(args[i]);
+			}
+		}
+
+	else if (strcmp(pol, "RR") == 0)
+	{
+		// load all scripts into memory and add them to the ready queue
+		for (int i = 1; i < argSize - 1; i++)
+		{
+			loadScript(args[i]);
+		}
+	}
+
+	else if (strcmp(pol, "AGING") == 0)
+	{
+		// load all scripts into memory and add them to the ready queue
+		for (int i = 1; i < argSize - 1; i++)
+		{
+			loadScript(args[i]);
+		}
 	}
 
 	// run the scheduler
