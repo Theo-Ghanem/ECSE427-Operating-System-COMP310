@@ -85,8 +85,10 @@ int parseInput(char ui[])
             if (ui[a] != ';') // should not increment for ';' since inner while loop needs to speperate one line commands!
                 a++;
         }
-        for (int i = 0; i < w; i++)
+
+        for (int i = 0; i < w; i++) //debugging
             printf("word %d: %s  \n", i, words[i]); // debugging
+
         errorCode = interpreter(words, w);          // send the word to the interpreter
         w = 0;
         memset(words, 0, sizeof(words)); // empty the array of words

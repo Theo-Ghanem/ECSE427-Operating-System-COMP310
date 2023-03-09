@@ -61,7 +61,7 @@ int my_ls();
 int my_mkdir(char *dirName);
 int my_touch(char *fileName);
 int my_cd(char *dirName);
-int exec(char progs[], int numProgs, char *pol);
+int exec(char *progs[], int numProgs, char *pol);
 
 // Interpret commands and their arguments
 int interpreter(char *command_args[], int args_size)
@@ -190,10 +190,12 @@ int interpreter(char *command_args[], int args_size)
 			return badcommandTooManyTokens();
 		}
 
-		char progs[args_size - 2];
+		// TODO Make sure that this is the correct way to do 2d string arrays
+		char *progs[args_size - 2];
 		for (int i = 1, j = 0; i < args_size - 1; i++, j++)
 		{
-			progs[j] = *command_args[i];
+			// TODO make sure entire string is copied into 2d string array
+			progs[j] = command_args[i];
 		}
 
 		return exec(progs, args_size - 2, command_args[args_size - 1]);
@@ -246,12 +248,11 @@ int print(char *var)
 // without explicitly running it
 int loadScript(char *script)
 {
+	printf("loading script");
 	int errCode = 0;
 	int scriptLineSize;
 	int scriptLocation;
-	int pc = 0;
 
-	printf("loading script");
 	// load code into memory
 	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
 
@@ -466,7 +467,7 @@ int my_cd(char *dirName)
 
 // A2 1.2.2 Exec command
 // executes the programs specified in the command line concurrently
-int exec(char progs[], int numProgs, char *pol)
+int exec(char *progs[], int numProgs, char *pol)
 {
 	printf("in exec\n");
 	int errCode = 0;
@@ -482,11 +483,25 @@ int exec(char progs[], int numProgs, char *pol)
 	// load all scripts into memory and add them to the ready queue
 	for (int i = 0; i < numProgs; i++)
 	{
-		printf("%c", progs[i]);
-		loadScript(&progs[i]);
+		printf("prog name: %s\n", progs[i]);
+		char *temp = malloc(strlen(progs[i]) + 1);
+		strcpy(temp, progs[i]);
+		if (temp == NULL)
+		{
+			printf("Failed to allocate memory for temp.\n");
+			return -1;
+		}
+
+		// Copy string from progs[i] to temp
+		strcpy(temp, progs[i]);
+		printf("temp: '%s'\n", temp);
+		// TODO this is where the error is (make sure the passed in var is the entire name of the file char *name)
+		loadScript(temp);
+		printf("loaded script\n");
+		free(temp);
 	}
 
-	sleep(10);
+	sleep(5);
 	// run the scheduler
 	startScheduler(pol);
 

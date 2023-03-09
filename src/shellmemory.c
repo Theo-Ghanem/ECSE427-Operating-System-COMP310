@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 struct memory_struct
 {
@@ -145,8 +146,9 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 		// naming: filename_lineNumber
 		int index = currentLine - startLine;
 		char ind[20];
-		itoa(&index, ind, 10);
+		sprintf(ind, "%d", index);
 		char *name = strcat(script, strcat("_", ind));
+		printf ("mem: %s\n", name);
 		shellmemory[currentLine].var = strdup(name);
 		shellmemory[currentLine].value = strdup(line);
 
@@ -160,6 +162,8 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 
 	*memLocation = startLine;
 	*memSize = lines;
+
+	sleep(5);
 
 	return errCode;
 }

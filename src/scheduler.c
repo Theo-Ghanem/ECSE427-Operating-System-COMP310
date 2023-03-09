@@ -16,7 +16,7 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
         return errCode;
     }
 
-    char *instr = strcat(name, "_") + current_instruction;
+    char *instr = strcat(name, "_") + current_instruction; 
 
     char *token = mem_get_value(instr);
 
@@ -52,7 +52,7 @@ int fcfs()
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
-            printf("this is the instruction:%s ", instruction); // debugging
+            printf("This is the instruction:%s \n", instruction); // debugging
             parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
