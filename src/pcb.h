@@ -13,5 +13,6 @@ typedef struct script_pcb
 
 int create_script_pcb(SCRIPT_PCB *pcb, char *name, int start_pos, int script_len);
 int increment_instruction(SCRIPT_PCB *pcb);
+void free_script_pcb(SCRIPT_PCB *pcb);
 
 #endif // SCRIPT_PCB_H

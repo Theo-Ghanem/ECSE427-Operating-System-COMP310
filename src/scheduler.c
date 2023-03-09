@@ -16,17 +16,22 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
         return errCode;
     }
 
-    char *instr = strcat(name, "_") + current_instruction;
+    char instr[100];
+    sprintf(instr, "%s_%d", name, current_instruction);
 
+    // printf("Var name: %s\n", instr);
     char *token = mem_get_value(instr);
+    // printf("Token: %s\n", token);
 
     if (token == NULL)
     {
         errCode = 1;
+        return errCode;
     }
     else
     {
         strcpy(instruction, token);
+        // printf("Instruction: %s\n", instruction);
     }
 
     return errCode;
@@ -58,19 +63,25 @@ int fcfs()
             increment_instruction(current_pcb);
         }
         mem_free_script(start_pos, script_len);
+        free_script_pcb(current_pcb);
     }
+
+    return errCode;
+}
+// For Shortest Job First, we use the number of lines of code in each program to estimate the job length.
+int sjf()
+{
+    printf("Running SJF scheduler\n");
+    int errCode = 0;
+
+    // check which program is the shortest
+
+    // run that program
 
     return errCode;
 }
 
 int rr()
-{
-    int errCode = 0;
-
-    return errCode;
-}
-
-int sjf()
 {
     int errCode = 0;
 

@@ -114,14 +114,17 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 	int lines = 0;
 	char ch;
 
-	while (!feof(p))
+	FILE *p2 = fopen(script, "rt");
+	while (!feof(p2))
 	{
-		ch = fgetc(p);
+		ch = fgetc(p2);
 		if (ch == '\n')
 		{
 			lines++;
 		}
 	}
+	fclose(p2);
+	lines++; // add one for the last line (EOF)
 
 	// find contiguous space in memory for the file
 	int startLine = 0;
@@ -139,19 +142,23 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 		}
 	}
 
-	// save lines into memory contiguously
+	// printf("Saving to memory, start line: %d\n", startLine);
+	//  save lines into memory contiguously
 	fgets(line, 999, p); // read the first line
 
-	for (int currentLine = startLine; currentLine < startLine + lines; currentLine++)
+	for (int currentLine = startLine; currentLine <= startLine + lines; currentLine++)
 	{
-		// naming: filename_lineNumber
+
+		//  naming: filename_lineNumber
 		int index = currentLine - startLine;
-		char ind[20];
-		sprintf(ind, "%d", index);
-		char *name = strcat(script, strcat("_", ind));
-		printf("mem: %s\n", name);
+		char name[100];
+		sprintf(name, "%s_%d", script, index);
+
+		// printf("mem addr: %s\n", name);
 		shellmemory[currentLine].var = strdup(name);
 		shellmemory[currentLine].value = strdup(line);
+
+		// printf("Mem value:'%s'\n", shellmemory[currentLine].value);
 
 		memset(line, 0, sizeof(line)); // empty the string
 		memset(line, 0, sizeof(name));
@@ -163,8 +170,6 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 
 	*memLocation = startLine;
 	*memSize = lines;
-
-	sleep(5);
 
 	return errCode;
 }

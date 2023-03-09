@@ -253,8 +253,8 @@ int loadScript(char *script)
 		return errCode;
 	}
 
-	printf("creating pcb");
-	// create PCB
+	// printf("creating pcb\n");
+	//  create PCB
 	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
 	errCode = create_script_pcb(pcb, script, scriptLocation, scriptLineSize);
 
@@ -264,15 +264,8 @@ int loadScript(char *script)
 int run(char *script)
 {
 	int errCode = 0;
-	int scriptLineSize;
-	int scriptLocation;
 
-	// load code into memory
-	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
-
-	// create PCB
-	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
-	errCode = create_script_pcb(pcb, script, scriptLocation, scriptLineSize);
+	errCode = loadScript(script);
 
 	// run the scheduler
 	startScheduler("FCFS");
@@ -463,7 +456,7 @@ int my_cd(char *dirName)
 // executes the programs specified in the command line concurrently
 int exec(char *args[], int argSize, char *pol)
 {
-	printf("in exec\n");
+	// printf("in exec\n");
 	int errCode = 0;
 
 	// check if policy is valid
@@ -472,17 +465,16 @@ int exec(char *args[], int argSize, char *pol)
 		return badcommandExec();
 	}
 
-	printf("num programs: %d\n", argSize - 2);
+	// printf("num programs: %d\n", argSize - 2);
 
 	// load all scripts into memory and add them to the ready queue
 	for (int i = 1; i < argSize - 1; i++)
 	{
-		printf("loading script %s\n", args[i]);
+		// printf("loading script %s\n", args[i]);
 		loadScript(args[i]);
-		printf("loaded script\n");
+		// printf("loaded script\n");
 	}
 
-	sleep(5);
 	// run the scheduler
 	startScheduler(pol);
 
