@@ -108,7 +108,8 @@ int startScheduler(char *policy)
     }
     else if (strcmp(policy, "SJF") == 0)
     {
-        errCode = sjf();
+        // errCode = sjf();
+        errCode = fcfs(); // this is not by accident
     }
     else if (strcmp(policy, "AGING") == 0)
     {

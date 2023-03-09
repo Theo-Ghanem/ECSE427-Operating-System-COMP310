@@ -473,14 +473,20 @@ int exec(char *args[], int argSize, char *pol)
 			loadScript(args[i]);
 		}
 	}
-	// print all elements of args[]
-	for (int i = 1; i < argSize - 1; i++)
 
-		// For Shortest Job First, we use the number of lines of code in each program to estimate the job length.
-		// The program with the fewest lines of code is enqueued first so it can be executed first.
-		else if (strcmp(pol, "SJF") == 0)
+	// For Shortest Job First, we use the number of lines of code in each program to estimate the job length.
+	// The program with the fewest lines of code is enqueued first so it can be executed first.
+	else if (strcmp(pol, "SJF") == 0)
+	{
+		// printf("Here is the order BEFORE rearranging:\n");
+		// for (int i = 1; i < argSize - 1; i++)
+		// {
+		// 	printf("args[%d]: %s\n has length: %d \n", i, args[i], strlen(args[i]));
+		// }
+
+		// compare all scripts and reorder them in ascending order of length
+		if (argSize > 3) // if there is more than one script
 		{
-			// compare all scripts and reorder them in ascending order of length
 			for (int i = 1; i < argSize - 1; i++)
 			{
 				for (int j = i + 1; j < argSize - 1; j++)
@@ -493,12 +499,19 @@ int exec(char *args[], int argSize, char *pol)
 					}
 				}
 			}
-
-			for (int i = 1; i < argSize - 1; i++)
-			{
-				loadScript(args[i]);
-			}
+			// printf("Here is the order AFTER rearranging:\n");
+			// for (int i = 1; i < argSize - 1; i++)
+			// {
+			// 	printf("args[%d]: %s\n has length: %d \n", i, args[i], strlen(args[i]));
+			// }
 		}
+
+		for (int i = 1; i < argSize - 1; i++)
+		{
+			// printf("loading script");
+			loadScript(args[i]);
+		}
+	}
 
 	else if (strcmp(pol, "RR") == 0)
 	{
