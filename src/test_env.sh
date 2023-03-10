@@ -1,10 +1,15 @@
 #!/bin/bash
-
-mkdir myenv
-cd src
-make 
 cd ..
-cp src/mysh myenv/mysh
-cp src/test_runner_A2.sh myenv/test_runner_A2.sh
-cp -a testcases/assignment2/. myenv/
-./env/mysh
+rm -r env
+mkdir env
+cd src
+make clean
+make mysh
+cd ..
+cp src/mysh env/mysh
+chmod +x env/mysh
+cp src/test_runner_A2.sh env/test_runner_A2.sh
+chmod +x env/test_runner_A2.sh
+cp -a testcases/assignment2/. env/
+cd env
+./test_runner_A2.sh

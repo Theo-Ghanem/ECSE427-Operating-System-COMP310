@@ -10,6 +10,7 @@
 
 # Project specific
 mysh
+env/
 
 # User-specific stuff
 .idea

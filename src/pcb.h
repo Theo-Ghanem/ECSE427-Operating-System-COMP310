@@ -8,6 +8,7 @@ typedef struct script_pcb
     int script_len;
     char *name;
     int current_instruction;
+    int job_length_score; // new field to keep track of job length score
     struct script_pcb *next;
 } SCRIPT_PCB;
 

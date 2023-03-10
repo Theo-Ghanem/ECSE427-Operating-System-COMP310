@@ -15,8 +15,9 @@ int create_script_pcb(SCRIPT_PCB *pcb, char *name, int start_pos, int script_len
     pcb->start_pos = start_pos;
     pcb->script_len = script_len;
     pcb->current_instruction = 0;
+    pcb->job_length_score = script_len; // Initialize job length score to script length
     pcb->next = NULL;
-    
+
     // Add the new PCB to the global ready queue
     enqueue_ready_queue(pcb);
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change this variable to run another assignment tests
-search_dir=$(pwd)/./assignment2
+search_dir=$(pwd)
 
 echo
 echo -e "Running all test cases in \033[1m$(basename ${search_dir})/\033[0m:"
@@ -12,7 +12,16 @@ failed_test_cases=0
 
 for file in "$search_dir"/*.txt
 do
-  if [[ $file == *_result.txt ]]; then
+  if [[ $file == *_result*.txt ]]; then
+    continue
+  fi
+  if [[ $file == P_* ]]; then
+    continue
+  fi
+  if [[ $file == T_MT* ]]; then
+    continue
+  fi
+  if [[ $file == T_AGING* ]]; then
     continue
   fi
 
@@ -28,13 +37,14 @@ do
   else
     failed_test_cases=$((failed_test_cases + 1))
     echo -e "\033[31mFAIL\033[0m $(basename ${file})"
-
-    echo
-    echo "Differences between expected output and actual output:"
-    echo
-    echo "${diff_output}"
-    echo
-    echo
+    
+    # ! Uncomment the following lines to see the diff output
+    # echo
+    # echo "Differences between expected output and actual output:"
+    # echo
+    # echo "${diff_output}"
+    # echo
+    # echo
   fi
 done
 

@@ -3,12 +3,15 @@
 #include "pcb.h"
 // Parts of this code were inspired from a combination of stackoverflow and chatGPT
 
+SCRIPT_PCB *find_shortest_job();
+SCRIPT_PCB *get_ready_queue_head();
 
 // Declare a global ready queue
 READY_QUEUE *ready_queue;
 
 // Function to initialize the global ready queue
-void queue_init() {
+void queue_init()
+{
     // Create a new ready queue and assign it to the global variable
     ready_queue = create_ready_queue();
 }
@@ -83,4 +86,39 @@ void destroy_ready_queue()
 
     // Free the ready queue
     free(ready_queue);
+}
+
+// Function to get the head of the ready queue
+SCRIPT_PCB *get_ready_queue_head()
+{
+    if (ready_queue->head == NULL)
+    {
+        return NULL;
+    }
+    return ready_queue->head;
+}
+
+// Function to find the shortest job in the ready queue
+SCRIPT_PCB *find_shortest_job()
+{
+    // If the ready queue is empty, return null
+    if (ready_queue->head == NULL)
+    {
+        return NULL;
+    }
+    // Otherwise, find the shortest job in the ready queue
+    else
+    {
+        SCRIPT_PCB *current = ready_queue->head;
+        SCRIPT_PCB *shortest = current;
+        while (current != NULL)
+        {
+            if (current->script_len < shortest->script_len)
+            {
+                shortest = current;
+            }
+            current = current->next;
+        }
+        return shortest;
+    }
 }

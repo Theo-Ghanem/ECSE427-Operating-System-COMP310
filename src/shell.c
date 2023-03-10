@@ -12,7 +12,7 @@ int parseInput(char ui[]);
 // Start of everything
 int main(int argc, char *argv[])
 {
-    printf("%s\n", "Shell version 1.2 Created January 2023");
+    printf("%s\n", "Shell version 1.2 Created January 2023\n");
     help();
 
     char prompt = '$';              // Shell prompt
