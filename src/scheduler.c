@@ -41,7 +41,7 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
 // runs processes in the order they arrive until all processes are complete
 int fcfs()
 {
-    printf("Running FCFS scheduler\n");
+    // printf("Running FCFS scheduler\n");
     int errCode = 0;
 
     while (ready_queue_is_empty() != 1)
@@ -52,7 +52,7 @@ int fcfs()
         int script_len = current_pcb->script_len;
         char *name = current_pcb->name;
         int current_instruction = 0;
-        while (current_instruction < script_len)
+        while (current_instruction < script_len - 1)
         {
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
@@ -68,17 +68,17 @@ int fcfs()
     return errCode;
 }
 // For Shortest Job First, we use the number of lines of code in each program to estimate the job length.
-int sjf()
-{
-    printf("Running SJF scheduler\n");
-    int errCode = 0;
+// int sjf()
+// {
+//     printf("Running SJF scheduler\n");
+//     int errCode = 0;
 
-    // check which program is the shortest
+//     // check which program is the shortest
 
-    // run that program
+//     // run that program
 
-    return errCode;
-}
+//     return errCode;
+// }
 
 int rr(int delta)
 {

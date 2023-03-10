@@ -62,6 +62,7 @@ int my_mkdir(char *dirName);
 int my_touch(char *fileName);
 int my_cd(char *dirName);
 int exec(char *progs[], int argSize, char *pol);
+int count_lines(const char *filename);
 
 // Interpret commands and their arguments
 int interpreter(char *command_args[], int args_size)
@@ -476,12 +477,12 @@ int exec(char *args[], int argSize, char *pol)
 
 	// For Shortest Job First, we use the number of lines of code in each program to estimate the job length.
 	// The program with the fewest lines of code is enqueued first so it can be executed first.
-	else if (strcmp(pol, "SJF") == 0)
+	else if (strcmp(pol, "SJF") == 0 || strcmp(pol, "RR") == 0)
 	{
 		// printf("Here is the order BEFORE rearranging:\n");
 		// for (int i = 1; i < argSize - 1; i++)
 		// {
-		// 	printf("args[%d]: %s\n has length: %d \n", i, args[i], strlen(args[i]));
+		// 	printf("args[%d]: %s\n has length: %d \n", i, args[i], count_lines(args[i]));
 		// }
 
 		// compare all scripts and reorder them in ascending order of length
@@ -491,7 +492,7 @@ int exec(char *args[], int argSize, char *pol)
 			{
 				for (int j = i + 1; j < argSize - 1; j++)
 				{
-					if ((strlen(args[i])) > strlen(args[j])) // if script i is longer than script j
+					if ((count_lines(args[i])) > count_lines(args[j])) // if script i is longer than script j
 					{
 						char *temp = args[i];
 						args[i] = args[j];
@@ -502,22 +503,13 @@ int exec(char *args[], int argSize, char *pol)
 			// printf("Here is the order AFTER rearranging:\n");
 			// for (int i = 1; i < argSize - 1; i++)
 			// {
-			// 	printf("args[%d]: %s\n has length: %d \n", i, args[i], strlen(args[i]));
+			// 	printf("args[%d]: %s\n has length: %d \n", i, args[i], count_lines(args[i]));
 			// }
 		}
 
 		for (int i = 1; i < argSize - 1; i++)
 		{
 			// printf("loading script");
-			loadScript(args[i]);
-		}
-	}
-
-	else if (strcmp(pol, "RR") == 0)
-	{
-		// load all scripts into memory and add them to the ready queue
-		for (int i = 1; i < argSize - 1; i++)
-		{
 			loadScript(args[i]);
 		}
 	}
@@ -535,4 +527,31 @@ int exec(char *args[], int argSize, char *pol)
 	startScheduler(pol);
 
 	return errCode;
+}
+
+int count_lines(const char *filename)
+{
+	int lines = 0;
+	char ch;
+	FILE *fp = fopen(filename, "rt");
+
+	if (fp == NULL)
+	{
+		printf("Error opening file.\n");
+		return -1;
+	}
+
+	while (!feof(fp))
+	{
+		ch = fgetc(fp);
+		if (ch == '\n')
+		{
+			lines++;
+		}
+	}
+
+	fclose(fp);
+	lines++; // add one for the last line (EOF)
+
+	return lines;
 }
