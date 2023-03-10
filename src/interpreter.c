@@ -207,7 +207,7 @@ quit			Exits / terminates the shell with “Bye!”\n \
 set VAR STRING		Assigns a value to shell memory\n \
 print VAR		Displays the STRING assigned to VAR\n \
 run SCRIPT.TXT		Executes the file SCRIPT.TXT\n ";
-	printf("%s\n", help_string);
+	// printf("%s\n", help_string);
 	return 0;
 }
 
@@ -466,7 +466,7 @@ int exec(char *args[], int argSize, char *pol)
 		return badcommandExec();
 	}
 
-	else if (strcmp(pol, "FCFS") == 0)
+	else if (strcmp(pol, "FCFS") == 0 || strcmp(pol, "RR") == 0)
 	{
 		// load all scripts into memory and add them to the ready queue
 		for (int i = 1; i < argSize - 1; i++)
@@ -477,7 +477,7 @@ int exec(char *args[], int argSize, char *pol)
 
 	// For Shortest Job First, we use the number of lines of code in each program to estimate the job length.
 	// The program with the fewest lines of code is enqueued first so it can be executed first.
-	else if (strcmp(pol, "SJF") == 0 || strcmp(pol, "RR") == 0)
+	else if (strcmp(pol, "SJF") == 0 || (strcmp(pol, "AGING") == 0))
 	{
 		// printf("Here is the order BEFORE rearranging:\n");
 		// for (int i = 1; i < argSize - 1; i++)
@@ -514,21 +514,13 @@ int exec(char *args[], int argSize, char *pol)
 		}
 	}
 
-	else if (strcmp(pol, "AGING") == 0)
-	{
-		// load all scripts into memory and add them to the ready queue
-		for (int i = 1; i < argSize - 1; i++)
-		{
-			loadScript(args[i]);
-		}
-	}
-
 	// run the scheduler
 	startScheduler(pol);
 
 	return errCode;
 }
 
+// helper function to count the number of lines in a file
 int count_lines(const char *filename)
 {
 	int lines = 0;
