@@ -57,7 +57,6 @@ int fcfs()
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
-            // printf("This is the instruction:%s \n", instruction); // debugging
             parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
@@ -81,9 +80,42 @@ int sjf()
     return errCode;
 }
 
-int rr()
+int rr(int delta)
 {
     int errCode = 0;
+
+    printf("Running RR scheduler\n");
+
+    while (ready_queue_is_empty() != 1)
+    {
+        SCRIPT_PCB *current_pcb = dequeue_ready_queue();
+        char *instruction = malloc(sizeof(char) * 100);
+        int start_pos = current_pcb->start_pos;
+        int script_len = current_pcb->script_len;
+        char *name = current_pcb->name;
+        int current_instruction = 0;
+        while (current_instruction < script_len)
+        {
+            current_instruction = current_pcb->current_instruction;
+            char *instruction = malloc(sizeof(char) * 100);
+            errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
+            parseInput(instruction);
+            free(instruction);
+            increment_instruction(current_pcb);
+            // requeue the process after delta instructions
+            if (current_instruction % delta == 0)
+            {
+                enqueue_ready_queue(current_pcb);
+                break;
+            }
+        }
+        // only clear memory when the process is complete
+        if (current_instruction >= script_len)
+        {
+            mem_free_script(start_pos, script_len);
+            free_script_pcb(current_pcb);
+        }
+    }
 
     return errCode;
 }
@@ -104,7 +136,11 @@ int startScheduler(char *policy)
     }
     else if (strcmp(policy, "RR") == 0)
     {
-        errCode = rr();
+        errCode = rr(2);
+    }
+    else if (strcmp(policy, "RR30") == 0)
+    {
+        errCode = rr(30);
     }
     else if (strcmp(policy, "SJF") == 0)
     {
