@@ -113,7 +113,7 @@ SCRIPT_PCB *find_shortest_job()
         SCRIPT_PCB *shortest = current;
         while (current != NULL)
         {
-            if (current->script_len < shortest->script_len)
+            if (current->job_length_score < shortest->job_length_score)
             {
                 shortest = current;
             }

@@ -13,3 +13,5 @@ chmod +x env/test_runner_A2.sh
 cp -a testcases/assignment2/. env/
 cd env
 ./test_runner_A2.sh
+cd ..
+rm -r env

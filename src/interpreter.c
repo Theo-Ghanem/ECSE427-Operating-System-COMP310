@@ -12,6 +12,7 @@
 #include "scheduler.h"
 
 int MAX_ARGS_SIZE = 7; // This was 3 initially, but changed to 7 for set function
+int bckgnd_run = 0;	   // 0 = false, 1 = true
 
 int badcommand()
 {
@@ -181,14 +182,18 @@ int interpreter(char *command_args[], int args_size)
 		return my_cd(command_args[1]);
 	}
 
-	// exec
+	// exec prog1 [prog2] [prog3] POLICY [#]
 	else if (strcmp(command_args[0], "exec") == 0)
 	{
 		if (args_size < 3)
 			return badcommand();
-		else if (args_size > 5)
+		else if (args_size > 6)
 		{
 			return badcommandTooManyTokens();
+		}
+		if (strcmp(command_args[args_size - 1], "#") == 0)
+		{
+			bckgnd_run = 1;
 		}
 
 		return exec(command_args, args_size, command_args[args_size - 1]);
@@ -482,7 +487,7 @@ int exec(char *args[], int argSize, char *pol)
 		// printf("Here is the order BEFORE rearranging:\n");
 		// for (int i = 1; i < argSize - 1; i++)
 		// {
-		// 	printf("args[%d]: %s\n has length: %d \n", i, args[i], count_lines(args[i]));
+		// 	printf("%s has length: %d \n", args[i], count_lines(args[i]));
 		// }
 
 		// compare all scripts and reorder them in ascending order of length
@@ -503,7 +508,7 @@ int exec(char *args[], int argSize, char *pol)
 			// printf("Here is the order AFTER rearranging:\n");
 			// for (int i = 1; i < argSize - 1; i++)
 			// {
-			// 	printf("args[%d]: %s\n has length: %d \n", i, args[i], count_lines(args[i]));
+			// 	printf("%s has length: %d \n", args[i], count_lines(args[i]));
 			// }
 		}
 
