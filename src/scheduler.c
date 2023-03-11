@@ -115,6 +115,7 @@ int aging()
     SCRIPT_PCB *current_job = dequeue_ready_queue(); // Get the next job to run
     SCRIPT_PCB *new_job = NULL;
     SCRIPT_PCB *job_to_age = NULL;
+    SCRIPT_PCB *tmp_job = NULL;
 
     while (1)
     {
@@ -129,9 +130,16 @@ int aging()
             parseInput(instruction);
             free(instruction);
             increment_instruction(current_job);
-            printf("^ the job is %s, the length score is %d \n", current_job->name, current_job->job_length_score);
+            // printf("^ the job is %s, the length score is %d \n", current_job->name, current_job->job_length_score);
+            // printf("(%s, %d)\n", current_job->name, current_job->job_length_score);
 
-            // Check if the current job is finished
+            for (tmp_job = get_ready_queue_head(); tmp_job != NULL; tmp_job = tmp_job->next)
+            {
+                printf("(%s, %d) ", tmp_job->name, tmp_job->job_length_score);
+            }
+            printf("\n");
+
+                        // Check if the current job is finished
             if (current_job->current_instruction == current_job->script_len)
             {
                 // printf("Current job is finished\n");
