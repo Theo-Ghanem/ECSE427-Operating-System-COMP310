@@ -146,8 +146,8 @@ int aging()
             // Decrement the job length score of all jobs in the ready queue except the current job
             decrement_job_length_score(current_job);
 
-            tmp_job = dequeue_ready_queue();
-            enqueue_ready_queue(tmp_job);
+            // tmp_job = dequeue_ready_queue();
+            // enqueue_ready_queue(tmp_job);
 
             // Reorder the ready queue based on the job length score
             reorder_ready_queue();
