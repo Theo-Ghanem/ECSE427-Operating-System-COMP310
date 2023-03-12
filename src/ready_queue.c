@@ -192,8 +192,8 @@ void reorder_ready_queue()
             // Dequeue the processes before the shortest job
             // if (shortest != ready_queue->head)
             // {
-            tmp_job = dequeue_ready_queue();
-            enqueue_ready_queue(tmp_job);
+            // tmp_job = dequeue_ready_queue();
+            // enqueue_ready_queue(tmp_job);
             // }
         }
     }
