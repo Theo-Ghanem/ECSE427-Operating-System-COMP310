@@ -127,7 +127,6 @@ SCRIPT_PCB *find_shortest_job()
     {
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
-        // printf("Current head is %s with length %d \n", shortest->name, shortest->job_length_score);
         while (current != NULL)
         {
             if (current->job_length_score < shortest->job_length_score)

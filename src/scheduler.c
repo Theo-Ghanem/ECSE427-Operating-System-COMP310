@@ -116,7 +116,7 @@ int aging()
     {
         // Run the current job for one instruction
         // printf("----------------------------------------\n");
-
+        print_ready_queue();
         int current_instruction = current_job->current_instruction;
         char *instruction = malloc(sizeof(char) * 100);
         errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
@@ -141,12 +141,16 @@ int aging()
         {
             // Decrement the job length score of all jobs in the ready queue except the current job
             decrement_job_length_score(current_job);
-            // print_ready_queue();
+
+            // tmp_job = dequeue_ready_queue();
+            // enqueue_ready_queue(tmp_job);
+
             // Reorder the ready queue based on the job length score
             reorder_ready_queue();
-            // print_ready_queue();
+
             // Get the next job to run
             current_job = peek_ready_queue();
+        print_ready_queue();
         }
     }
 
