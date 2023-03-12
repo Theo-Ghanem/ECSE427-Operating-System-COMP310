@@ -111,7 +111,7 @@ int aging()
 {
     int errCode = 0;
     SCRIPT_PCB *current_job = peek_ready_queue(); // Get the next job to run
-
+    SCRIPT_PCB *tmp_job = NULL;
     while (current_job != NULL && get_ready_queue_head() != NULL)
     {
         // Run the current job for one instruction
@@ -131,6 +131,10 @@ int aging()
             dequeue_ready_queue();
             free_script_pcb(current_job);
             current_job = peek_ready_queue();
+            if(current_job == NULL)
+            {
+                break;
+            }
             current_job->job_length_score--;
             if (current_job->job_length_score < 0)
             {
@@ -141,6 +145,9 @@ int aging()
         {
             // Decrement the job length score of all jobs in the ready queue except the current job
             decrement_job_length_score(current_job);
+
+            tmp_job = dequeue_ready_queue();
+            enqueue_ready_queue(tmp_job);
 
             // Reorder the ready queue based on the job length score
             reorder_ready_queue();

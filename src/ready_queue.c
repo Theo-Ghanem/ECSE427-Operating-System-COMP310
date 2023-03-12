@@ -152,17 +152,6 @@ SCRIPT_PCB *find_shortest_job()
                 enqueue_ready_queue(tmp_job);
             }
         }
-
-        // Check if the shortest job is not the head of the queue
-        // if (shortest != ready_queue->head)
-        // {
-        //     printf("Promoted %s\n", shortest->name);
-        // }
-        // else
-        // {
-        //     printf("No promotion\n");
-        // }
-
         return shortest;
     }
 }
