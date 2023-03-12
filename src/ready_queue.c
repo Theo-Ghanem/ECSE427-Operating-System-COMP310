@@ -177,12 +177,19 @@ void reorder_ready_queue()
             }
             current = current->next;
         }
-        // Do this if we want to move the shortest job to the front of the queue by putting it at the head of the queue
+        move_to_front(shortest); // move the shortest job to the front of the queue
 
-        move_to_front(shortest);
-
-        // Use bubblesort to sort the ready queue
-        // bubbleSort();
+        // Sort the queue by job length score
+        if (ready_queue->head == NULL || ready_queue->head->next == NULL || ready_queue->head->next->next == NULL)
+            return;
+        SCRIPT_PCB *script2 = ready_queue->head->next;
+        SCRIPT_PCB *script3 = ready_queue->head->next->next;
+        if (script2->job_length_score > script3->job_length_score)
+        {
+            ready_queue->head->next = script3; // A->C
+            script3->next = script2;           // C->B
+            script2->next = NULL;              // B-> null
+        }
         return;
     }
 }
@@ -242,45 +249,4 @@ void move_to_front(SCRIPT_PCB *target)
         target->next = ready_queue->head;
         ready_queue->head = target;
     }
-}
-
-void bubbleSort()
-{
-    // SCRIPT_PCB *p, *q, *end, *tmp;
-    // end = NULL;
-
-    // while (ready_queue->head->next != end)
-    // {
-    //     p = ready_queue->head;
-    //     q = ready_queue->head->next;
-    //     while (q != end)
-    //     {
-    //         if (p->job_length_score > q->job_length_score)
-    //         {
-    //             // swap PCBs
-    //             tmp = p->next;
-    //             p->next = q->next;
-    //             q->next = tmp;
-
-    //             tmp = p;
-    //             p = q;
-    //             q = tmp;
-    //         }
-    //         p = p->next;
-    //         q = q->next;
-    //     }
-    //     end = p; // mark last unsorted node
-    // }
-    if (ready_queue->head == NULL || ready_queue->head->next == NULL)
-        return;
-    SCRIPT_PCB *script2 = ready_queue->head->next;
-    SCRIPT_PCB *script3 = ready_queue->head->next->next;
-    if (script2->job_length_score > script3->job_length_score)
-    {
-        printf("Swapping %s and %s \n", script2->name, script3->name);
-        ready_queue->head->next = script3; // A->C
-        script3->next = script2;           // C->B
-        script2->next = NULL;              // B-> null
-    }
-    return;
 }
