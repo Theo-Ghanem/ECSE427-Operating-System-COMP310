@@ -14,20 +14,14 @@ READY_QUEUE *ready_queue;
 // Function to initialize the global ready queue
 void queue_init()
 {
-    // Create a new ready queue and assign it to the global variable
-    ready_queue = create_ready_queue();
+    ready_queue = create_ready_queue(); // Create a new ready queue and assign it to the global variable
 }
 
 // Function to create a new ready queue
 READY_QUEUE *create_ready_queue()
 {
-    // Allocate memory for the new ready queue
     READY_QUEUE *ready_queue = (READY_QUEUE *)malloc(sizeof(READY_QUEUE));
-
-    // Initialize the ready queue with a null head
     ready_queue->head = NULL;
-
-    // Return the new ready queue
     return ready_queue;
 }
 
@@ -89,7 +83,8 @@ SCRIPT_PCB *peek_ready_queue()
 
 int ready_queue_is_empty()
 {
-    return ready_queue->head == NULL;
+    int is_empty = ready_queue->head == NULL;
+    return is_empty;
 }
 
 // Function to free the memory allocated to a ready queue
@@ -139,7 +134,7 @@ SCRIPT_PCB *find_shortest_job()
             {
                 shortest = current;
             }
-            else // not sure if there is a need for this else statement
+            // else // not sure if there is a need for this else statement
                 current = current->next;
         }
 
@@ -178,6 +173,7 @@ void reorder_ready_queue()
     {
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
+        
         while (current != NULL)
         {
             if (current->job_length_score < shortest->job_length_score)
@@ -187,14 +183,10 @@ void reorder_ready_queue()
             current = current->next;
         }
 
-        while (shortest != ready_queue->head)
+        while (shortest != ready_queue->head)// Dequeue the processes before the shortest job
         {
-            // Dequeue the processes before the shortest job
-            // if (shortest != ready_queue->head)
-            // {
             tmp_job = dequeue_ready_queue();
             enqueue_ready_queue(tmp_job);
-            // }
         }
     }
     // printf("Ready queue after aging: ");
@@ -210,8 +202,6 @@ void reorder_ready_queue()
 void decrement_job_length_score(SCRIPT_PCB *current_job)
 {
     SCRIPT_PCB *job_to_age = get_ready_queue_head();
-    if (job_to_age != current_job)
-        printf("the head is not the current job !\n" );
     while (job_to_age != NULL)
     {
         if (job_to_age != current_job)
@@ -225,5 +215,16 @@ void decrement_job_length_score(SCRIPT_PCB *current_job)
 
         job_to_age = job_to_age->next;
     }
+}
+
+void print_ready_queue()
+{
+    SCRIPT_PCB *tmp_job = NULL;
+    printf("Ready queue:\n");
+    for (tmp_job = get_ready_queue_head(); tmp_job != NULL; tmp_job = tmp_job->next)
+    {
+        printf("\t(%s, %d)\n", tmp_job->name, tmp_job->job_length_score);
+    }
+    printf("\n");
 }
 
