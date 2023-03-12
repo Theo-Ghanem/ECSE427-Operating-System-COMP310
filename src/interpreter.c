@@ -12,7 +12,6 @@
 #include "scheduler.h"
 
 int MAX_ARGS_SIZE = 7; // This was 3 initially, but changed to 7 for set function
-int bckgnd_run = 0;	   // 0 = false, 1 = true
 
 int badcommand()
 {
@@ -64,6 +63,8 @@ int my_touch(char *fileName);
 int my_cd(char *dirName);
 int exec(char *progs[], int argSize, char *pol);
 int count_lines(const char *filename);
+int load_buffer_mem();
+int loadScript(char *script);
 
 // Interpret commands and their arguments
 int interpreter(char *command_args[], int args_size)
@@ -182,7 +183,7 @@ int interpreter(char *command_args[], int args_size)
 		return my_cd(command_args[1]);
 	}
 
-	// exec prog1 [prog2] [prog3] POLICY [#]
+	// exec prog1 [prog2] [prog3] POLICY [#] [MT]
 	else if (strcmp(command_args[0], "exec") == 0)
 	{
 		if (args_size < 3)
@@ -193,7 +194,10 @@ int interpreter(char *command_args[], int args_size)
 		}
 		if (strcmp(command_args[args_size - 1], "#") == 0)
 		{
-			bckgnd_run = 1;
+			load_buffer_mem(); // load the stdin buffer into memory
+
+			// reduce args_size by 1 to account for the # token
+			args_size--;
 		}
 
 		return exec(command_args, args_size, command_args[args_size - 1]);
@@ -201,6 +205,37 @@ int interpreter(char *command_args[], int args_size)
 
 	else
 		return badcommand();
+}
+
+// helper function to handle background script execution
+int load_buffer_mem()
+{
+	int errCode = 0;
+
+	// continue reading lines from stdin
+	char line[1000];
+	fgets(line, 999, stdin);		  // read the first line
+	FILE *f = fopen("temp.txt", "a"); // create a temp file
+	while (1)
+	{
+		fprintf(f, "%s", line);		   // write the line to the file
+		memset(line, 0, sizeof(line)); // empty the string
+
+		if (feof(stdin) == 1) // checks if we are at the end of the stdin buffer
+		{
+			// close the temp file
+			fclose(f);
+			break;
+		}
+		fgets(line, 999, stdin);
+	}
+	// load the stdin instructions into memory and add to the ready queue
+	loadScript("temp.txt");
+
+	// remove the temp file
+	remove("temp.txt");
+
+	return errCode;
 }
 
 int help()

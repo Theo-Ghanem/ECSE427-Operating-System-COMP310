@@ -67,6 +67,8 @@ SCRIPT_PCB *dequeue_ready_queue()
         head->next = NULL;
         return head;
     }
+
+    
 }
 
 // Function to peek at the first PCB in the ready queue
@@ -214,16 +216,25 @@ void reorder_ready_queue()
     // printf("\n----------------------\n");
 }
 
-void age_ready_queue()
+
+// Decrement the job length score of all jobs in the ready queue except the current job
+void decrement_job_length_score(SCRIPT_PCB *current_job)
 {
     SCRIPT_PCB *job_to_age = get_ready_queue_head();
+    if (job_to_age != current_job)
+        printf("the head is not the current job !\n" );
     while (job_to_age != NULL)
     {
-        job_to_age->job_length_score--;
-        if (job_to_age->job_length_score < 0)
+        if (job_to_age != current_job)
         {
-            job_to_age->job_length_score = 0;
+            job_to_age->job_length_score--;
+            if (job_to_age->job_length_score < 0)
+            {
+                job_to_age->job_length_score = 0;
+            }
         }
+
         job_to_age = job_to_age->next;
     }
 }
+

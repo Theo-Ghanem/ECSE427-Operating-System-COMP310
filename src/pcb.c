@@ -28,6 +28,7 @@ int create_script_pcb(SCRIPT_PCB *pcb, char *name, int start_pos, int script_len
 void free_script_pcb(SCRIPT_PCB *pcb)
 {
     free(pcb);
+    pcb = NULL; //! added this, if we ever have problems refer back to this
 }
 
 int increment_instruction(SCRIPT_PCB *pcb)
