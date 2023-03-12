@@ -7,8 +7,11 @@
 #include "shell.h"
 #include "pcb.h"
 #include "shellmemory.h"
+#include "scheduler.h"
 
 int run_scheduler = 0;
+char *pol;
+thread_pool_t *pool;
 
 int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
@@ -109,60 +112,8 @@ int rr(int delta)
     return errCode;
 }
 
-int aging2() //the new one we were working on
-{
-    int errCode = 0;
-    // queue already in correct order
-
-    printf("the queue at start is: \n");
-    print_ready_queue();
-
-    // dequeue frist process
-    SCRIPT_PCB *current_job = dequeue_ready_queue();
-
-    while (ready_queue_is_empty() == 0)
-    {
-        printf("the queue is: \n");
-        print_ready_queue();
-        // execute one line
-        int current_instruction = current_job->current_instruction;
-        char *instruction = malloc(sizeof(char) * 100);
-        errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
-        parseInput(instruction);
-        free(instruction);
-        increment_instruction(current_job);
-
-        // Check if job is done, clear mem
-        if (current_job->current_instruction == current_job->script_len)
-        {
-            mem_free_script(current_job->start_pos, current_job->script_len);
-            free_script_pcb(current_job);
-            decrement_job_length_score();
-            current_job = dequeue_ready_queue();
-            continue;
-        }
-
-        // age all processes in RQ
-        decrement_job_length_score();
-
-        // if current job score >= RQ head then requeue *AT THE RIGHT SPOT*
-        SCRIPT_PCB *rq_head = peek_ready_queue();
-        if (current_job->job_length_score > rq_head->job_length_score)
-        {
-            // requeue at the right spot
-            place_in_ready_queue(current_job);
-            current_job = dequeue_ready_queue();
-        }
-        // printf("\n");
-        //     print_ready_queue();
-        //     printf("----------------------------------------\n");
-    }
-
-    return errCode;
-}
-
 // Aging scheduling policy
-int aging() //original one
+int aging() // original one
 {
     int errCode = 0;
     SCRIPT_PCB *current_job = peek_ready_queue(); // Get the next job to run
@@ -184,17 +135,11 @@ int aging() //original one
             mem_free_script(current_job->start_pos, current_job->script_len);
             free_script_pcb(current_job);
             current_job = peek_ready_queue();
-            // if (current_job == NULL)
-            // {
-            //     break;
-            // }
         }
         else
         {
             // Decrement the job length score of all jobs in the ready queue except the current job
             decrement_job_length_score(current_job);
-
-            // enqueue_ready_queue(dequeue_ready_queue);
 
             // Reorder the ready queue based on the job length score
             reorder_ready_queue();
@@ -237,7 +182,8 @@ void startScheduler(char *policy)
     }
 }
 
-void *poll_scheduler(void *arg)
+// Part 3 Multithreaded scheduler
+void *poll_scheduler(void *arg) //
 {
     while (run_scheduler == 0)
     {
@@ -247,15 +193,46 @@ void *poll_scheduler(void *arg)
     return NULL;
 }
 
-int startSchedulerMT(char *policy)
+int startSchedulerMT(char *policy) //
 {
-    pthread_t w1;
-    pthread_t w2;
-    pthread_create(&w1, NULL, poll_scheduler, policy);
-    pthread_create(&w2, NULL, poll_scheduler, policy);
-    run_scheduler = 1;
-    pthread_join(w1, NULL);
-    pthread_join(w2, NULL);
+    pol = policy;
+    pthread_mutex_lock(&(pool->lock));
+    pool->work_to_do = 1;
+    pthread_cond_broadcast(&(pool->work_ready));
+    pthread_mutex_unlock(&(pool->lock));
 
     return 0;
+}
+
+
+
+void *worker_thread_func(void *arg)
+{
+    thread_pool_t *pool = (thread_pool_t *)arg;
+    while (1)
+    {
+        pthread_mutex_lock(&pool->lock);
+        while (pool->work_to_do == 0)
+        {
+            pthread_cond_wait(&pool->work_ready, &pool->lock);
+        }
+        pool->work_to_do = 0;
+        pthread_mutex_unlock(&pool->lock);
+        printf("Thread starting scheduler\n");
+        startScheduler(pol);
+    }
+    return NULL;
+}
+
+void init_thread_pool(thread_pool_t *pl)
+{
+    int i;
+    pool = pl;
+    pool->work_to_do = 0;
+    pthread_cond_init(&(pool->work_ready), NULL);
+    pthread_mutex_init(&(pool->lock), NULL);
+    for (i = 0; i < 2; i++)
+    {
+        pthread_create(&(pool->threads[i]), NULL, &worker_thread_func, (void *)pool);
+    }
 }
