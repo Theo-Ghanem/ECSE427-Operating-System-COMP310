@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "ready_queue.h"
 #include "shell.h"
 #include "pcb.h"
 #include "shellmemory.h"
+
+int run_scheduler = 0;
 
 int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
@@ -116,7 +119,7 @@ int aging()
     {
         // Run the current job for one instruction
         // printf("----------------------------------------\n");
-        print_ready_queue();
+        // print_ready_queue();
         int current_instruction = current_job->current_instruction;
         char *instruction = malloc(sizeof(char) * 100);
         errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
@@ -150,7 +153,9 @@ int aging()
 
             // Get the next job to run
             current_job = peek_ready_queue();
-        print_ready_queue();
+            // printf("\n");
+            // print_ready_queue();        
+            // printf("----------------------------------------\n");
         }
     }
 
@@ -158,7 +163,7 @@ int aging()
 }
 
 // This function starts the scheduler based on the policy passed in
-int startScheduler(char *policy)
+void startScheduler(char *policy)
 {
     int errCode = 0;
     if (strcmp(policy, "FCFS") == 0)
@@ -186,6 +191,28 @@ int startScheduler(char *policy)
         printf("Invalid scheduling policy. Please try again.\n");
         errCode = 1;
     }
+}
 
-    return errCode;
+void *poll_scheduler(void *arg)
+{
+    while (run_scheduler == 0)
+    {
+    }
+    char *policy = (char *)arg;
+    startScheduler(policy);
+    return NULL;
+    
+}
+
+int startSchedulerMT(char *policy)
+{
+    pthread_t w1;
+    pthread_t w2;
+    pthread_create(&w1, NULL, poll_scheduler, policy);
+    pthread_create(&w2, NULL, poll_scheduler, policy);
+    run_scheduler = 1;
+    pthread_join(w1, NULL);
+    pthread_join(w2, NULL);
+
+    return 0;
 }

@@ -5,4 +5,5 @@
 
 // Function to run the scheduler
 void startScheduler(char *pol);
+int startSchedulerMT(char *pol);
 #endif

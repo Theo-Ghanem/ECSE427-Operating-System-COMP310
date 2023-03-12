@@ -1,2 +1,2 @@
-exec P_longP1 P_longP2 RR30 # MT
+exec ../testcases/assignment2/P_longP1 ../testcases/assignment2/P_longP2 RR30 # MT
 quit

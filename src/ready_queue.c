@@ -11,7 +11,7 @@ SCRIPT_PCB *get_ready_queue_head();
 // Declare a global ready queue
 READY_QUEUE *ready_queue;
 
-// Function to initialize the global ready queue
+// Function to initialize  the global ready queue
 void queue_init()
 {
     ready_queue = create_ready_queue(); // Create a new ready queue and assign it to the global variable
@@ -127,6 +127,9 @@ SCRIPT_PCB *find_shortest_job()
     {
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
+        SCRIPT_PCB *tmp1 = NULL;
+        SCRIPT_PCB *tmp2 = NULL;
+        SCRIPT_PCB *tmp3 = NULL;
         while (current != NULL)
         {
             if (current->job_length_score < shortest->job_length_score)
@@ -137,7 +140,7 @@ SCRIPT_PCB *find_shortest_job()
                 current = current->next;
         }
 
-        while (shortest != ready_queue->head)
+        while (shortest != ready_queue->head) //this moves the shortest job to the front of the queue
         {
             // Dequeue the processes before the shortest job
             if (shortest != ready_queue->head)
@@ -146,6 +149,10 @@ SCRIPT_PCB *find_shortest_job()
                 enqueue_ready_queue(tmp_job);
             }
         }
+
+
+
+
         return shortest;
     }
 }
@@ -162,9 +169,13 @@ void reorder_ready_queue()
     {
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
+        SCRIPT_PCB *prev_job = NULL;
+        SCRIPT_PCB *tmp_job = NULL;
+
         while (current != NULL)
         {
             if (current->job_length_score < shortest->job_length_score)
+                prev_job=current;
                 shortest = current;
             current = current->next;
         }
@@ -174,6 +185,13 @@ void reorder_ready_queue()
             tmp_job = dequeue_ready_queue();
             enqueue_ready_queue(tmp_job);
         }
+        
+
+        //! This is the code that I wrote to place the shortest job at the head of the queue, need to test it!
+        // current = ready_queue->head;
+        // prev_job->next = shortest->next; //make the pcb before the shortest job point to the pcb after the shortest job
+        // shortest->next = ready_queue->head; //make the shortest job point to the head of the queue
+        // ready_queue->head = shortest; //make the shortest job the head of the queue
     }
 }
 

@@ -67,7 +67,7 @@ int my_ls();
 int my_mkdir(char *dirName);
 int my_touch(char *fileName);
 int my_cd(char *dirName);
-int exec(char *progs[], int argSize, char *pol);
+int exec(char *progs[], int argSize, char *pol, int MT);
 int count_lines(const char *filename);
 int load_buffer_mem();
 int loadScript(char *script);
@@ -192,21 +192,29 @@ int interpreter(char *command_args[], int args_size)
 	// exec prog1 [prog2] [prog3] POLICY [#] [MT]
 	else if (strcmp(command_args[0], "exec") == 0)
 	{
+		int MT = 0;
 		if (args_size < 3)
 			return badcommand();
-		else if (args_size > 6)
+		else if (args_size > 7)
 		{
 			return badcommandTooManyTokens();
 		}
-		if (strcmp(command_args[args_size - 1], "#") == 0)
+		if (strcmp(command_args[args_size - 1], "#") == 0 || strcmp(command_args[args_size - 2], "#") == 0)
 		{
 			load_buffer_mem(); // load the stdin buffer into memory
 
 			// reduce args_size by 1 to account for the # token
 			args_size--;
 		}
+		if (strcmp(command_args[args_size - 1], "MT") == 0 )
+		{
+			// set MT flag
+			MT = 1;
+			// reduce args_size by 1 to account for the MT token
+			args_size--;
+		}
 
-		return exec(command_args, args_size, command_args[args_size - 1]);
+		return exec(command_args, args_size, command_args[args_size - 1], MT);
 	}
 
 	else
@@ -501,7 +509,7 @@ int my_cd(char *dirName)
 
 // A2 1.2.2 Exec command
 // executes the programs specified in the command line concurrently
-int exec(char *args[], int argSize, char *pol)
+int exec(char *args[], int argSize, char *pol, int MT)
 {
 	// printf("in exec\n");
 	int errCode = 0;
@@ -573,7 +581,14 @@ int exec(char *args[], int argSize, char *pol)
 	}
 
 	// run the scheduler
-	startScheduler(pol);
+	if (MT == 1)
+	{
+		startSchedulerMT(pol);
+	}
+	else
+	{
+		startScheduler(pol);
+	}
 
 	return errCode;
 }
