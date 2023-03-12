@@ -22,10 +22,7 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
 
     char instr[100];
     sprintf(instr, "%s_%d", name, current_instruction);
-
-    // printf("Var name: %s\n", instr);
     char *token = mem_get_value(instr);
-    // printf("Token: %s\n", token);
 
     if (token == NULL)
     {
@@ -35,7 +32,6 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
     else
     {
         strcpy(instruction, token);
-        // printf("Instruction: %s\n", instruction);
     }
 
     return errCode;
@@ -46,7 +42,6 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
 // This is also used for Shortest Job First, we enqued the processes based on their job length.
 int fcfs()
 {
-    // printf("Running FCFS scheduler\n");
     int errCode = 0;
 
     while (ready_queue_is_empty() != 1)
@@ -109,60 +104,8 @@ int rr(int delta)
     return errCode;
 }
 
-int aging2() //the new one we were working on
-{
-    int errCode = 0;
-    // queue already in correct order
-
-    printf("the queue at start is: \n");
-    print_ready_queue();
-
-    // dequeue frist process
-    SCRIPT_PCB *current_job = dequeue_ready_queue();
-
-    while (ready_queue_is_empty() == 0)
-    {
-        printf("the queue is: \n");
-        print_ready_queue();
-        // execute one line
-        int current_instruction = current_job->current_instruction;
-        char *instruction = malloc(sizeof(char) * 100);
-        errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
-        parseInput(instruction);
-        free(instruction);
-        increment_instruction(current_job);
-
-        // Check if job is done, clear mem
-        if (current_job->current_instruction == current_job->script_len)
-        {
-            mem_free_script(current_job->start_pos, current_job->script_len);
-            free_script_pcb(current_job);
-            decrement_job_length_score();
-            current_job = dequeue_ready_queue();
-            continue;
-        }
-
-        // age all processes in RQ
-        decrement_job_length_score();
-
-        // if current job score >= RQ head then requeue *AT THE RIGHT SPOT*
-        SCRIPT_PCB *rq_head = peek_ready_queue();
-        if (current_job->job_length_score > rq_head->job_length_score)
-        {
-            // requeue at the right spot
-            place_in_ready_queue(current_job);
-            current_job = dequeue_ready_queue();
-        }
-        // printf("\n");
-        //     print_ready_queue();
-        //     printf("----------------------------------------\n");
-    }
-
-    return errCode;
-}
-
 // Aging scheduling policy
-int aging() //original one
+int aging()
 {
     int errCode = 0;
     SCRIPT_PCB *current_job = peek_ready_queue(); // Get the next job to run
@@ -184,17 +127,11 @@ int aging() //original one
             mem_free_script(current_job->start_pos, current_job->script_len);
             free_script_pcb(current_job);
             current_job = peek_ready_queue();
-            // if (current_job == NULL)
-            // {
-            //     break;
-            // }
         }
         else
         {
             // Decrement the job length score of all jobs in the ready queue except the current job
             decrement_job_length_score(current_job);
-
-            // enqueue_ready_queue(dequeue_ready_queue);
 
             // Reorder the ready queue based on the job length score
             reorder_ready_queue();

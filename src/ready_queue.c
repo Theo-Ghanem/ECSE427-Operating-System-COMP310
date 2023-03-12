@@ -47,6 +47,7 @@ void enqueue_ready_queue(SCRIPT_PCB *pcb)
     }
 }
 
+// We are not using this function, but it might come in handy later  
 // Function to add a new PCB in the right spot in the ready queue based on its job_length_score
 void place_in_ready_queue(SCRIPT_PCB *pcb)
 {
@@ -188,7 +189,6 @@ void reorder_ready_queue()
     // Otherwise, find the shortest job in the ready queue
     else
     {
-        // printf("# of jobs: %d \n",get_number_of_jobs_in_ready_queue());
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
         SCRIPT_PCB *prev_job = NULL;
@@ -219,18 +219,6 @@ void reorder_ready_queue()
     }
 
 }
-
-// Decrement the job length score of all jobs in the ready queue except the current job
-// void decrement_job_length_score()
-// {
-//     SCRIPT_PCB *job_to_age = get_ready_queue_head();
-//     while (job_to_age != NULL)
-//     {
-//             if (job_to_age->job_length_score > 0)
-//                 job_to_age->job_length_score--;
-//         job_to_age = job_to_age->next;
-//     }
-// }
 
 // Decrement the job length score of all jobs in the ready queue except the current job
 void decrement_job_length_score(SCRIPT_PCB *current_job)
