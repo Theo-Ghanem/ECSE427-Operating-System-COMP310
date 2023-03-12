@@ -18,5 +18,8 @@ void destroy_ready_queue();
 int ready_queue_is_empty();
 SCRIPT_PCB *get_ready_queue_head();
 SCRIPT_PCB *find_shortest_job();
+void reorder_ready_queue();
+void age_ready_queue();
+SCRIPT_PCB *peek_ready_queue();
 
 #endif // READY_QUEUE_H

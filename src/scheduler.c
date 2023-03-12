@@ -65,7 +65,6 @@ int fcfs()
         mem_free_script(start_pos, script_len);
         free_script_pcb(current_pcb);
     }
-
     return errCode;
 }
 
@@ -108,82 +107,194 @@ int rr(int delta)
 }
 
 // Aging scheduling policy
+// int aging()
+// {
+//     // printf("Running Aging scheduler\n");
+//     int errCode = 0;
+//     SCRIPT_PCB *current_job = dequeue_ready_queue(); // Get the next job to run
+//     SCRIPT_PCB *new_job = NULL;
+//     SCRIPT_PCB *job_to_age = NULL;
+//     SCRIPT_PCB *tmp_job = NULL;
+
+//     while (1)
+//     {
+//         // print for debugging
+//         printf("(%s, %d) ", current_job->name, current_job->job_length_score);
+//         for (tmp_job = get_ready_queue_head(); tmp_job != NULL; tmp_job = tmp_job->next)
+//         {
+//             printf("(%s, %d) ", tmp_job->name, tmp_job->job_length_score);
+//         }
+//         printf("\n");
+//         if (current_job != NULL)
+//         {
+
+//             // Run the current job for one instruction
+//             printf("----------------------------------------\n");
+//             int current_instruction = 0;
+//             current_instruction = current_job->current_instruction;
+//             char *instruction = malloc(sizeof(char) * 100);
+//             errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
+//             parseInput(instruction);
+//             free(instruction);
+//             increment_instruction(current_job);
+//             // printf("^ the job is %s, the length score is %d \n", current_job->name, current_job->job_length_score);
+//             // printf("(%s, %d)\n", current_job->name, current_job->job_length_score);
+
+//             // Check if the current job is finished
+//             if (current_job->current_instruction == current_job->script_len)
+//             {
+//                 free_script_pcb(current_job);
+//                 current_job = dequeue_ready_queue();
+//             }
+
+//             // Check if there is a new job in the ready queue with a lower job length score
+//             new_job = find_shortest_job();
+//             if (new_job != NULL)
+//             {
+//                 // Preempt the current job and run the new job
+//                 enqueue_ready_queue(current_job);
+//                 current_job = dequeue_ready_queue();
+//             }
+//         }
+
+//         // Age the jobs in the ready queue
+//         job_to_age = get_ready_queue_head();
+//         while (job_to_age != NULL && job_to_age != current_job)
+//         {
+//             job_to_age->job_length_score = job_to_age->job_length_score - 1;
+//             if (job_to_age->job_length_score < 0)
+//             {
+//                 job_to_age->job_length_score = 0;
+//             }
+//             job_to_age = job_to_age->next;
+//         }
+
+//         // Check if the current job is still the shortest job in the ready queue
+//         new_job = find_shortest_job();
+//         if (new_job != NULL)
+//         {
+//             // Preempt the current job and run the new job
+//             enqueue_ready_queue(current_job);
+//             current_job = dequeue_ready_queue();
+//         }
+
+//         // Check if there are any jobs left in the ready queue
+//         if (current_job == NULL)
+//         {
+//             break;
+//         }
+//     }
+//     return errCode;
+// }
+
+// draft for aging:
+// int aging()
+// {
+//     int errCode = 0;
+//     SCRIPT_PCB *current_job = NULL;
+//     SCRIPT_PCB *job_to_age = NULL;
+
+//     // Get the next job to run and reorder the ready queue based on job_length_score
+//     current_job = dequeue_ready_queue();
+//     age_ready_queue();
+
+//     while (current_job != NULL)
+//     {
+//         // Run the current job for one instruction
+//         printf("----------------------------------------\n");
+//         int current_instruction = current_job->current_instruction;
+//         char *instruction = malloc(sizeof(char) * 100);
+//         errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
+//         parseInput(instruction);
+//         free(instruction);
+//         increment_instruction(current_job);
+
+//         // Check if the current job is finished
+//         if (current_job->current_instruction == current_job->script_len)
+//         {
+//             free_script_pcb(current_job);
+//         }
+//         else
+//         {
+//             // Decrement the job_length_score of all jobs in the ready queue except the current one
+//             job_to_age = get_ready_queue_head();
+//             while (job_to_age != NULL)
+//             {
+//                 if (job_to_age != current_job)
+//                 {
+//                     job_to_age->job_length_score--;
+//                     if (job_to_age->job_length_score < 0)
+//                     {
+//                         job_to_age->job_length_score = 0;
+//                     }
+//                 }
+//                 job_to_age = job_to_age->next;
+//             }
+
+//             // Reorder the ready queue based on job_length_score
+//             enqueue_ready_queue(current_job);
+//             current_job = dequeue_ready_queue();
+//             age_ready_queue();
+//         }
+//     }
+//     return errCode;
+// }
+
+// other draft
 int aging()
 {
-    // printf("Running Aging scheduler\n");
     int errCode = 0;
-    SCRIPT_PCB *current_job = dequeue_ready_queue(); // Get the next job to run
-    SCRIPT_PCB *new_job = NULL;
-    SCRIPT_PCB *job_to_age = NULL;
-    SCRIPT_PCB *tmp_job = NULL;
+    SCRIPT_PCB *current_job = peek_ready_queue(); // Get the next job to run
 
-    while (1)
+    while (current_job != NULL)
     {
-        if (current_job != NULL)
+        // Run the current job for one instruction
+        // printf("----------------------------------------\n");
+
+        int current_instruction = current_job->current_instruction;
+        char *instruction = malloc(sizeof(char) * 100);
+        errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
+        parseInput(instruction);
+        free(instruction);
+        increment_instruction(current_job);
+
+        // Check if the current job is finished
+        if (current_job->current_instruction == current_job->script_len)
         {
-
-            // Run the current job for one instruction
-            int current_instruction = 0;
-            current_instruction = current_job->current_instruction;
-            char *instruction = malloc(sizeof(char) * 100);
-            errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
-            parseInput(instruction);
-            free(instruction);
-            increment_instruction(current_job);
-            // printf("^ the job is %s, the length score is %d \n", current_job->name, current_job->job_length_score);
-            // printf("(%s, %d)\n", current_job->name, current_job->job_length_score);
-
-            for (tmp_job = get_ready_queue_head(); tmp_job != NULL; tmp_job = tmp_job->next)
+            free_script_pcb(current_job);
+            dequeue_ready_queue();
+            current_job = peek_ready_queue();
+            current_job->job_length_score--;
+            if (current_job->job_length_score < 0)
             {
-                printf("(%s, %d) ", tmp_job->name, tmp_job->job_length_score);
-            }
-            printf("\n");
-
-                        // Check if the current job is finished
-            if (current_job->current_instruction == current_job->script_len)
-            {
-                // printf("Current job is finished\n");
-                free_script_pcb(current_job);
-                current_job = dequeue_ready_queue();
-            }
-
-            // Check if there is a new job in the ready queue with a lower job length score
-            new_job = find_shortest_job();
-            if (new_job != NULL)
-            {
-                // Preempt the current job and run the new job
-                enqueue_ready_queue(current_job);
-                current_job = dequeue_ready_queue();
+                current_job->job_length_score = 0;
             }
         }
-
-        // Age the jobs in the ready queue
-        job_to_age = get_ready_queue_head();
-        while (job_to_age != NULL && job_to_age != current_job)
+        else
         {
-            job_to_age->job_length_score = job_to_age->job_length_score - 1;
-            if (job_to_age->job_length_score < 0)
+            // Decrement the job length score of all jobs in the ready queue except the current job
+            SCRIPT_PCB *job_to_age = get_ready_queue_head();
+            while (job_to_age != NULL)
             {
-                job_to_age->job_length_score = 0;
+                if (job_to_age != current_job)
+                {
+                    job_to_age->job_length_score--;
+                    if (job_to_age->job_length_score < 0)
+                    {
+                        job_to_age->job_length_score = 0;
+                    }
+                }
+                job_to_age = job_to_age->next;
             }
-            job_to_age = job_to_age->next;
-        }
 
-        // Check if the current job is still the shortest job in the ready queue
-        new_job = find_shortest_job();
-        if (new_job != NULL)
-        {
-            // Preempt the current job and run the new job
-            enqueue_ready_queue(current_job);
-            current_job = dequeue_ready_queue();
-        }
+            // Reorder the ready queue based on the job length score
+            reorder_ready_queue();
 
-        // Check if there are any jobs left in the ready queue
-        if (current_job == NULL)
-        {
-            break;
+            // Get the next job to run
+            current_job = peek_ready_queue();
         }
     }
+
     return errCode;
 }
 
