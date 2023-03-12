@@ -117,10 +117,11 @@ int aging()
     SCRIPT_PCB *tmp_job = NULL;
     while (current_job != NULL && get_ready_queue_head() != NULL)
     {
-        // Run the current job for one instruction
-        // printf("the queue before reordering is: \n");
-        // print_ready_queue();
 
+        printf("the queue before reordering is: \n");
+        print_ready_queue();
+
+        // Run the current job for one instruction
         int current_instruction = current_job->current_instruction;
         char *instruction = malloc(sizeof(char) * 100);
         errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);

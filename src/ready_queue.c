@@ -190,6 +190,24 @@ void reorder_ready_queue()
             script3->next = script2;           // C->B
             script2->next = NULL;              // B-> null
         }
+        printf("Ready queue after sorting:\n");
+        print_ready_queue();
+        printf("---------------------\n");
+        // return;
+
+        // if (ready_queue->head == NULL || ready_queue->head->next == NULL)
+        //     return;
+        // SCRIPT_PCB *script2 = ready_queue->head->next;
+        // SCRIPT_PCB *script3 = ready_queue->head->next->next;
+        // if (script2->job_length_score > script3->job_length_score)
+        // {
+        //     ready_queue->head->next = script3; // A->C
+        //     script3->next = script2;           // C->B
+        //     script2->next = NULL;              // B-> null
+        // }
+        // printf("Ready queue after sorting:\n");
+        // print_ready_queue();
+        // printf("---------------------\n");
         return;
     }
 }
