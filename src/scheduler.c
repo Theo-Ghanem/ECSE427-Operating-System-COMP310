@@ -118,8 +118,9 @@ int aging()
     while (current_job != NULL && get_ready_queue_head() != NULL)
     {
         // Run the current job for one instruction
-        // printf("----------------------------------------\n");
+        // printf("the queue before reordering is: \n");
         // print_ready_queue();
+
         int current_instruction = current_job->current_instruction;
         char *instruction = malloc(sizeof(char) * 100);
         errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
@@ -133,7 +134,7 @@ int aging()
             dequeue_ready_queue();
             free_script_pcb(current_job);
             current_job = peek_ready_queue();
-            if(current_job == NULL)
+            if (current_job == NULL)
             {
                 break;
             }
@@ -145,16 +146,13 @@ int aging()
             // Decrement the job length score of all jobs in the ready queue except the current job
             decrement_job_length_score(current_job);
 
-            // tmp_job = dequeue_ready_queue();
-            // enqueue_ready_queue(tmp_job);
-
             // Reorder the ready queue based on the job length score
             reorder_ready_queue();
 
             // Get the next job to run
             current_job = peek_ready_queue();
             // printf("\n");
-            // print_ready_queue();        
+            // print_ready_queue();
             // printf("----------------------------------------\n");
         }
     }
@@ -201,7 +199,6 @@ void *poll_scheduler(void *arg)
     char *policy = (char *)arg;
     startScheduler(policy);
     return NULL;
-    
 }
 
 int startSchedulerMT(char *policy)

@@ -22,5 +22,6 @@ void reorder_ready_queue();
 void decrement_job_length_score(SCRIPT_PCB *current_job);
 SCRIPT_PCB *peek_ready_queue();
 void print_ready_queue();
+void move_to_front(SCRIPT_PCB *target);
 
 #endif // READY_QUEUE_H

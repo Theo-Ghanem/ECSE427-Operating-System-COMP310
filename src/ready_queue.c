@@ -7,6 +7,8 @@
 
 SCRIPT_PCB *find_shortest_job();
 SCRIPT_PCB *get_ready_queue_head();
+void move_to_front(SCRIPT_PCB *target);
+void bubbleSort();
 
 // Declare a global ready queue
 READY_QUEUE *ready_queue;
@@ -61,8 +63,6 @@ SCRIPT_PCB *dequeue_ready_queue()
         head->next = NULL;
         return head;
     }
-
-    
 }
 
 // Function to peek at the first PCB in the ready queue
@@ -137,10 +137,10 @@ SCRIPT_PCB *find_shortest_job()
                 shortest = current;
             }
             // else // not sure if there is a need for this else statement
-                current = current->next;
+            current = current->next;
         }
 
-        while (shortest != ready_queue->head) //this moves the shortest job to the front of the queue
+        while (shortest != ready_queue->head) // this moves the shortest job to the front of the queue
         {
             // Dequeue the processes before the shortest job
             if (shortest != ready_queue->head)
@@ -149,9 +149,6 @@ SCRIPT_PCB *find_shortest_job()
                 enqueue_ready_queue(tmp_job);
             }
         }
-
-
-
 
         return shortest;
     }
@@ -170,31 +167,25 @@ void reorder_ready_queue()
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
         SCRIPT_PCB *prev_job = NULL;
-        SCRIPT_PCB *tmp_job = NULL;
 
         while (current != NULL)
         {
             if (current->job_length_score < shortest->job_length_score)
-                prev_job=current;
+            {
+                prev_job = current;
                 shortest = current;
+            }
             current = current->next;
         }
+        // Do this if we want to move the shortest job to the front of the queue by putting it at the head of the queue
 
-        while (shortest != ready_queue->head)// Dequeue the processes before the shortest job
-        {
-            tmp_job = dequeue_ready_queue();
-            enqueue_ready_queue(tmp_job);
-        }
-        
+        move_to_front(shortest);
 
-        //! This is the code that I wrote to place the shortest job at the head of the queue, need to test it!
-        // current = ready_queue->head;
-        // prev_job->next = shortest->next; //make the pcb before the shortest job point to the pcb after the shortest job
-        // shortest->next = ready_queue->head; //make the shortest job point to the head of the queue
-        // ready_queue->head = shortest; //make the shortest job the head of the queue
+        // Use bubblesort to sort the ready queue
+        // bubbleSort();
+        return;
     }
 }
-
 
 // Decrement the job length score of all jobs in the ready queue except the current job
 void decrement_job_length_score(SCRIPT_PCB *current_job)
@@ -203,9 +194,9 @@ void decrement_job_length_score(SCRIPT_PCB *current_job)
     while (job_to_age != NULL)
     {
         if (job_to_age != current_job)
-        {            
+        {
             if (job_to_age->job_length_score > 0)
-            job_to_age->job_length_score--;
+                job_to_age->job_length_score--;
         }
         job_to_age = job_to_age->next;
     }
@@ -222,3 +213,74 @@ void print_ready_queue()
     printf("\n");
 }
 
+// dequeue a specific PCB and move it to the front of the ready queue
+void move_to_front(SCRIPT_PCB *target)
+{
+    SCRIPT_PCB *current = ready_queue->head;
+    SCRIPT_PCB *prev = NULL;
+
+    // find the target PCB in the queue
+    while (current != NULL && current != target)
+    {
+        prev = current;
+        current = current->next;
+    }
+
+    // if the target PCB was found, remove it from its current position
+    if (current == target)
+    {
+        if (prev == NULL)
+        { // target is at the head of the queue
+            return;
+        }
+        else
+        {
+            prev->next = target->next;
+        }
+
+        // move the target PCB to the front of the queue
+        target->next = ready_queue->head;
+        ready_queue->head = target;
+    }
+}
+
+void bubbleSort()
+{
+    // SCRIPT_PCB *p, *q, *end, *tmp;
+    // end = NULL;
+
+    // while (ready_queue->head->next != end)
+    // {
+    //     p = ready_queue->head;
+    //     q = ready_queue->head->next;
+    //     while (q != end)
+    //     {
+    //         if (p->job_length_score > q->job_length_score)
+    //         {
+    //             // swap PCBs
+    //             tmp = p->next;
+    //             p->next = q->next;
+    //             q->next = tmp;
+
+    //             tmp = p;
+    //             p = q;
+    //             q = tmp;
+    //         }
+    //         p = p->next;
+    //         q = q->next;
+    //     }
+    //     end = p; // mark last unsorted node
+    // }
+    if (ready_queue->head == NULL || ready_queue->head->next == NULL)
+        return;
+    SCRIPT_PCB *script2 = ready_queue->head->next;
+    SCRIPT_PCB *script3 = ready_queue->head->next->next;
+    if (script2->job_length_score > script3->job_length_score)
+    {
+        printf("Swapping %s and %s \n", script2->name, script3->name);
+        ready_queue->head->next = script3; // A->C
+        script3->next = script2;           // C->B
+        script2->next = NULL;              // B-> null
+    }
+    return;
+}
