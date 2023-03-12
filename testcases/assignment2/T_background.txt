@@ -1,4 +1,4 @@
-exec ../testcases/assignment2/P_short SJF #
+exec P_short SJF #
 echo shell
 echo shell
-exec ../testcases/assignment2/P_quit SJF
+exec P_quit SJF

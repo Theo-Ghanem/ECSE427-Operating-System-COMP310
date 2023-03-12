@@ -8,7 +8,7 @@
 SCRIPT_PCB *find_shortest_job();
 SCRIPT_PCB *get_ready_queue_head();
 void move_to_front(SCRIPT_PCB *target);
-void bubbleSort();
+int get_number_of_jobs_in_ready_queue();
 
 // Declare a global ready queue
 READY_QUEUE *ready_queue;
@@ -44,6 +44,30 @@ void enqueue_ready_queue(SCRIPT_PCB *pcb)
             current = current->next;
         }
         current->next = pcb;
+    }
+}
+
+// Function to add a new PCB in the right spot in the ready queue based on its job_length_score
+void place_in_ready_queue(SCRIPT_PCB *pcb)
+{
+    // If the ready queue is empty, set the head to the new PCB
+    if (ready_queue->head == NULL)
+    {
+        ready_queue->head = pcb;
+    }
+    // Otherwise, traverse the ready queue and add the new PCB to the end
+    else
+    {
+        SCRIPT_PCB *current = ready_queue->head;
+        while (current->next != NULL && current->next->job_length_score < pcb->job_length_score) // this is where the magic happens
+        {
+            current = current->next;
+        }
+        
+        // assign to that spot and rearrage pointers
+        SCRIPT_PCB *temp = current->next;
+        current->next = pcb;
+        pcb->next = temp;
     }
 }
 
@@ -164,6 +188,7 @@ void reorder_ready_queue()
     // Otherwise, find the shortest job in the ready queue
     else
     {
+        // printf("# of jobs: %d \n",get_number_of_jobs_in_ready_queue());
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
         SCRIPT_PCB *prev_job = NULL;
@@ -180,37 +205,32 @@ void reorder_ready_queue()
         move_to_front(shortest); // move the shortest job to the front of the queue
 
         // Sort the queue by job length score
-        if (ready_queue->head == NULL || ready_queue->head->next == NULL || ready_queue->head->next->next == NULL)
-            return;
-        SCRIPT_PCB *script2 = ready_queue->head->next;
-        SCRIPT_PCB *script3 = ready_queue->head->next->next;
-        if (script2->job_length_score > script3->job_length_score)
-        {
-            ready_queue->head->next = script3; // A->C
-            script3->next = script2;           // C->B
-            script2->next = NULL;              // B-> null
+        if (get_number_of_jobs_in_ready_queue() == 3){
+            SCRIPT_PCB *script2 = ready_queue->head->next;
+            SCRIPT_PCB *script3 = ready_queue->head->next->next;
+            if (script2->job_length_score > script3->job_length_score)
+            {
+                ready_queue->head->next = script3;
+                script3->next = script2;
+                script2->next = NULL;
+            }
         }
-        printf("Ready queue after sorting:\n");
-        print_ready_queue();
-        printf("---------------------\n");
-        // return;
-
-        // if (ready_queue->head == NULL || ready_queue->head->next == NULL)
-        //     return;
-        // SCRIPT_PCB *script2 = ready_queue->head->next;
-        // SCRIPT_PCB *script3 = ready_queue->head->next->next;
-        // if (script2->job_length_score > script3->job_length_score)
-        // {
-        //     ready_queue->head->next = script3; // A->C
-        //     script3->next = script2;           // C->B
-        //     script2->next = NULL;              // B-> null
-        // }
-        // printf("Ready queue after sorting:\n");
-        // print_ready_queue();
-        // printf("---------------------\n");
         return;
     }
+
 }
+
+// Decrement the job length score of all jobs in the ready queue except the current job
+// void decrement_job_length_score()
+// {
+//     SCRIPT_PCB *job_to_age = get_ready_queue_head();
+//     while (job_to_age != NULL)
+//     {
+//             if (job_to_age->job_length_score > 0)
+//                 job_to_age->job_length_score--;
+//         job_to_age = job_to_age->next;
+//     }
+// }
 
 // Decrement the job length score of all jobs in the ready queue except the current job
 void decrement_job_length_score(SCRIPT_PCB *current_job)
@@ -267,4 +287,15 @@ void move_to_front(SCRIPT_PCB *target)
         target->next = ready_queue->head;
         ready_queue->head = target;
     }
+}
+
+int get_number_of_jobs_in_ready_queue()
+{
+    int count = 0;
+    SCRIPT_PCB *tmp_job = NULL;
+    for (tmp_job = get_ready_queue_head(); tmp_job != NULL; tmp_job = tmp_job->next)
+    {
+        count++;
+    }
+    return count;
 }

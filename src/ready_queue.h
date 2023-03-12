@@ -19,9 +19,11 @@ int ready_queue_is_empty();
 SCRIPT_PCB *get_ready_queue_head();
 SCRIPT_PCB *find_shortest_job();
 void reorder_ready_queue();
-void decrement_job_length_score(SCRIPT_PCB *current_job);
+void decrement_job_length_score2(SCRIPT_PCB *current_job);
+void decrement_job_length_score();
 SCRIPT_PCB *peek_ready_queue();
 void print_ready_queue();
 void move_to_front(SCRIPT_PCB *target);
+void place_in_ready_queue(SCRIPT_PCB *pcb);
 
 #endif // READY_QUEUE_H

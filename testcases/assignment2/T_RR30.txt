@@ -1,3 +1,3 @@
-exec ../testcases/assignment2/P_longP1 ../testcases/assignment2/P_longP2 ../testcases/assignment2/P_longP3 RR30 #
+exec P_longP1 P_longP2 P_longP3 RR30 #
 echo shell
-exec ../testcases/assignment2/P_quit RR30
+exec P_quit RR30
