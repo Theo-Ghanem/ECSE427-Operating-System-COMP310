@@ -50,6 +50,12 @@ int badcommandExec()
 	return 1;
 }
 
+int badcommandExecFiles()
+{
+	printf("%s\n", "Bad command: same file name");
+	return 1;
+}
+
 int help();
 int quit();
 int set(char *var, char *value);
@@ -505,8 +511,20 @@ int exec(char *args[], int argSize, char *pol)
 	{
 		return badcommandExec();
 	}
+	
+	//check for duplicate file names
+	for (int i = 1; i < argSize - 1; i++)
+	{
+		for (int j = i + 1; j < argSize - 1; j++)
+		{
+			if (strcmp(args[i], args[j]) == 0)
+			{
+				return badcommandExecFiles();
+			}
+		}
+	}
 
-	else if (strcmp(pol, "FCFS") == 0 || strcmp(pol, "RR") == 0 || strcmp(pol, "RR") == 0)
+	if (strcmp(pol, "FCFS") == 0 || strcmp(pol, "RR") == 0 || strcmp(pol, "RR30") == 0)
 	{
 		// load all scripts into memory and add them to the ready queue
 		for (int i = 1; i < argSize - 1; i++)

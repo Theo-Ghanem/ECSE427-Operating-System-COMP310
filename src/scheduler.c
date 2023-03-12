@@ -73,7 +73,7 @@ int rr(int delta)
 {
     int errCode = 0;
 
-    while (ready_queue_is_empty() != 1)
+    while (ready_queue_is_empty() == 0)
     {
         SCRIPT_PCB *current_pcb = dequeue_ready_queue();
         int start_pos = current_pcb->start_pos;
@@ -127,7 +127,6 @@ int aging()
         // Check if the current job is finished
         if (current_job->current_instruction == current_job->script_len)
         {
-            
             dequeue_ready_queue();
             free_script_pcb(current_job);
             current_job = peek_ready_queue();
@@ -135,23 +134,17 @@ int aging()
             {
                 break;
             }
-            current_job->job_length_score--;
-            if (current_job->job_length_score < 0)
-            {
-                current_job->job_length_score = 0;
-            }
+            if (current_job->job_length_score > 0)
+                current_job->job_length_score--;
         }
         else
         {
             // Decrement the job length score of all jobs in the ready queue except the current job
             decrement_job_length_score(current_job);
-
-            // tmp_job = dequeue_ready_queue();
-            // enqueue_ready_queue(tmp_job);
-
+            // print_ready_queue();
             // Reorder the ready queue based on the job length score
             reorder_ready_queue();
-
+            // print_ready_queue();
             // Get the next job to run
             current_job = peek_ready_queue();
         }

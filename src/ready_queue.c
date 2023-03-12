@@ -155,31 +155,18 @@ SCRIPT_PCB *find_shortest_job()
 void reorder_ready_queue()
 {
     SCRIPT_PCB *tmp_job = NULL;
-    SCRIPT_PCB *tmp_job2 = NULL;
-    // printf("Ready queue before aging: ");
-    // for (tmp_job2 = get_ready_queue_head(); tmp_job2 != NULL; tmp_job2 = tmp_job2->next)
-    // {
-    //     printf("(%s, %d) ", tmp_job2->name, tmp_job2->job_length_score);
-    // }
-    // printf("\n");
-
     // If the ready queue is empty, return null
     if (ready_queue->head == NULL)
-    {
         return;
-    }
     // Otherwise, find the shortest job in the ready queue
     else
     {
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
-        
         while (current != NULL)
         {
             if (current->job_length_score < shortest->job_length_score)
-            {
                 shortest = current;
-            }
             current = current->next;
         }
 
@@ -189,12 +176,6 @@ void reorder_ready_queue()
             enqueue_ready_queue(tmp_job);
         }
     }
-    // printf("Ready queue after aging: ");
-    // for (tmp_job2 = get_ready_queue_head(); tmp_job2 != NULL; tmp_job2 = tmp_job2->next)
-    // {
-    //     printf("(%s, %d) ", tmp_job2->name, tmp_job2->job_length_score);
-    // }
-    // printf("\n----------------------\n");
 }
 
 
@@ -205,14 +186,10 @@ void decrement_job_length_score(SCRIPT_PCB *current_job)
     while (job_to_age != NULL)
     {
         if (job_to_age != current_job)
-        {
+        {            
+            if (job_to_age->job_length_score > 0)
             job_to_age->job_length_score--;
-            if (job_to_age->job_length_score < 0)
-            {
-                job_to_age->job_length_score = 0;
-            }
         }
-
         job_to_age = job_to_age->next;
     }
 }
