@@ -199,13 +199,6 @@ int interpreter(char *command_args[], int args_size)
 		{
 			return badcommandTooManyTokens();
 		}
-		if (strcmp(command_args[args_size - 1], "#") == 0 || strcmp(command_args[args_size - 2], "#") == 0)
-		{
-			load_buffer_mem(); // load the stdin buffer into memory
-
-			// reduce args_size by 1 to account for the # token
-			args_size--;
-		}
 		if (strcmp(command_args[args_size - 1], "MT") == 0 )
 		{
 			// set MT flag
@@ -213,6 +206,16 @@ int interpreter(char *command_args[], int args_size)
 			// reduce args_size by 1 to account for the MT token
 			args_size--;
 		}
+		
+		if (strcmp(command_args[args_size - 1], "#") == 0)
+		{
+			load_buffer_mem(); // load the stdin buffer into memory
+
+			// reduce args_size by 1 to account for the # token
+			args_size--;
+		}
+
+		
 
 		return exec(command_args, args_size, command_args[args_size - 1], MT);
 	}

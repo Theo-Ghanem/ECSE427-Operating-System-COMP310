@@ -7,8 +7,11 @@
 #include "shell.h"
 #include "pcb.h"
 #include "shellmemory.h"
+#include "scheduler.h"
 
 int run_scheduler = 0;
+char *pol;
+thread_pool_t *pool;
 
 int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
@@ -105,7 +108,7 @@ int rr(int delta)
 }
 
 // Aging scheduling policy
-int aging()
+int aging() // original one
 {
     int errCode = 0;
     SCRIPT_PCB *current_job = peek_ready_queue(); // Get the next job to run
@@ -174,7 +177,8 @@ void startScheduler(char *policy)
     }
 }
 
-void *poll_scheduler(void *arg)
+// Part 3 Multithreaded scheduler
+void *poll_scheduler(void *arg) //
 {
     while (run_scheduler == 0)
     {
@@ -184,15 +188,50 @@ void *poll_scheduler(void *arg)
     return NULL;
 }
 
-int startSchedulerMT(char *policy)
+int startSchedulerMT(char *policy) //
 {
-    pthread_t w1;
-    pthread_t w2;
-    pthread_create(&w1, NULL, poll_scheduler, policy);
-    pthread_create(&w2, NULL, poll_scheduler, policy);
-    run_scheduler = 1;
-    pthread_join(w1, NULL);
-    pthread_join(w2, NULL);
+    pol = policy;
+    pthread_mutex_lock(&(pool->lock));
+    pool->work_to_do = 2;
+    pthread_cond_broadcast(&(pool->work_ready));
+    pthread_mutex_unlock(&(pool->lock));
 
     return 0;
+}
+
+
+
+void *worker_thread_func(void *arg)
+{
+    thread_pool_t *pool = (thread_pool_t *)arg;
+    while (1)
+    {
+        pthread_mutex_lock(&(pool->lock));
+
+        while (pool->work_to_do == 0)
+        {
+            pthread_cond_wait(&(pool->work_ready), &(pool->lock));
+        }
+        pool->work_to_do = --pool->work_to_do;
+        pthread_mutex_unlock(&(pool->lock));
+
+        printf("Thread starting scheduler\n");
+        startScheduler(pol);
+        printf("Thread finished scheduler\n");
+        
+    }
+    return NULL;
+}
+
+void init_thread_pool(thread_pool_t *pl)
+{
+    int i;
+    pool = pl;
+    pool->work_to_do = 0;
+    pthread_cond_init(&(pool->work_ready), NULL);
+    pthread_mutex_init(&(pool->lock), NULL);
+    for (i = 0; i < 2; i++)
+    {
+        pthread_create(&(pool->threads[i]), NULL, &worker_thread_func, (void *)pool);
+    }
 }

@@ -161,7 +161,6 @@ SCRIPT_PCB *find_shortest_job()
             {
                 shortest = current;
             }
-            // else // not sure if there is a need for this else statement
             current = current->next;
         }
 
@@ -205,7 +204,7 @@ void reorder_ready_queue()
         move_to_front(shortest); // move the shortest job to the front of the queue
 
         // Sort the queue by job length score
-        if (get_number_of_jobs_in_ready_queue() == 3){
+        if (get_number_of_jobs_in_ready_queue() == 3){ //igonring the head because it is in the right spot already
             SCRIPT_PCB *script2 = ready_queue->head->next;
             SCRIPT_PCB *script3 = ready_queue->head->next->next;
             if (script2->job_length_score > script3->job_length_score)

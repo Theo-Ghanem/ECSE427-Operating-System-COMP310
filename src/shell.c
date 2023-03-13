@@ -2,9 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 #include "interpreter.h"
 #include "shellmemory.h"
 #include "ready_queue.h"
+#include "scheduler.h"
+
+void *manager_thread(void *arg);
 
 int MAX_USER_INPUT = 1000;
 int parseInput(char ui[]);
@@ -12,6 +16,27 @@ int parseInput(char ui[]);
 // Start of everything
 int main(int argc, char *argv[])
 {
+    // init shell memory
+    mem_init();
+
+    // init the ready queue [For Assignment 2]
+    queue_init();
+
+    thread_pool_t pool;
+    init_thread_pool(&pool);
+
+    pthread_t manager;
+    pthread_create(&manager, NULL, &manager_thread, (void *)&pool);
+
+    pthread_join(manager, NULL);
+
+    return 0;
+}
+
+void *manager_thread(void *arg)
+{
+    thread_pool_t *pool = (thread_pool_t *)arg;
+
     printf("%s\n", "Shell version 1.2 Created January 2023\n");
     help();
 
@@ -22,12 +47,6 @@ int main(int argc, char *argv[])
     // init user input
     for (int i = 0; i < MAX_USER_INPUT; i++)
         userInput[i] = '\0';
-
-    // init shell memory
-    mem_init();
-
-    // init the ready queue [For Assignment 2]
-    queue_init();
 
     while (1)
     {
@@ -41,12 +60,17 @@ int main(int argc, char *argv[])
         {
             errorCode = parseInput(userInput);
             if (errorCode == -1)
+            {
+                pthread_join((*pool).threads[0], NULL);
+                pthread_join((*pool).threads[1], NULL);
                 exit(99); // ignore all other errors
+            }
+
             memset(userInput, 0, sizeof(userInput));
         }
     }
 
-    return 0;
+    return NULL;
 }
 
 int parseInput(char ui[])
