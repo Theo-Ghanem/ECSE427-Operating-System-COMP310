@@ -28,7 +28,9 @@ int main(int argc, char *argv[])
     pthread_t manager;
     pthread_create(&manager, NULL, &manager_thread, (void *)&pool);
 
-    pthread_join(manager, NULL);
+    pthread_join(pool.threads[0], NULL);
+    pthread_join(pool.threads[1], NULL);
+    //pthread_join(manager, NULL);
 
     return 0;
 }
