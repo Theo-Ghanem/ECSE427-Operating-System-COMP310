@@ -12,6 +12,7 @@
 #include "scheduler.h"
 
 int MAX_ARGS_SIZE = 7; // This was 3 initially, but changed to 7 for set function
+int MT_flag = 0;
 
 int badcommand()
 {
@@ -193,20 +194,22 @@ int interpreter(char *command_args[], int args_size)
 	else if (strcmp(command_args[0], "exec") == 0)
 	{
 		int MT = 0;
+		MT_flag = 0;
 		if (args_size < 3)
 			return badcommand();
 		else if (args_size > 7)
 		{
 			return badcommandTooManyTokens();
 		}
-		if (strcmp(command_args[args_size - 1], "MT") == 0 )
+		if (strcmp(command_args[args_size - 1], "MT") == 0)
 		{
 			// set MT flag
 			MT = 1;
+			MT_flag = 1;
 			// reduce args_size by 1 to account for the MT token
 			args_size--;
 		}
-		
+
 		if (strcmp(command_args[args_size - 1], "#") == 0)
 		{
 			load_buffer_mem(); // load the stdin buffer into memory
@@ -214,8 +217,6 @@ int interpreter(char *command_args[], int args_size)
 			// reduce args_size by 1 to account for the # token
 			args_size--;
 		}
-
-		
 
 		return exec(command_args, args_size, command_args[args_size - 1], MT);
 	}
@@ -271,6 +272,10 @@ run SCRIPT.TXT		Executes the file SCRIPT.TXT\n ";
 int quit()
 {
 	printf("%s\n", "Bye!");
+	if (MT_flag == 1)
+	{
+		sleep(2);
+	}
 	exit(0);
 }
 
@@ -522,8 +527,8 @@ int exec(char *args[], int argSize, char *pol, int MT)
 	{
 		return badcommandExec();
 	}
-	
-	//check for duplicate file names
+
+	// check for duplicate file names
 	for (int i = 1; i < argSize - 1; i++)
 	{
 		for (int j = i + 1; j < argSize - 1; j++)

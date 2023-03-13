@@ -56,6 +56,10 @@ void *manager_thread(void *arg)
         }
 
         fgets(userInput, MAX_USER_INPUT - 1, stdin); // get user input
+        if (feof(stdin))
+        {
+            freopen("/dev/tty", "r", stdin);
+        }
         if (strlen(userInput) > 0)
         {
             errorCode = parseInput(userInput);
