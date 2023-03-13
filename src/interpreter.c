@@ -271,7 +271,7 @@ run SCRIPT.TXT		Executes the file SCRIPT.TXT\n ";
 int quit()
 {
 	printf("%s\n", "Bye!");
-	exit(0);
+	return -1;
 }
 
 // 1.2.1 Enhance the set command
