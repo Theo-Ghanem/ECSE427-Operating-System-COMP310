@@ -25,18 +25,6 @@ int main(int argc, char *argv[])
     thread_pool_t pool;
     init_thread_pool(&pool);
 
-    pthread_t manager;
-    pthread_create(&manager, NULL, &manager_thread, (void *)&pool);
-
-    pthread_join(manager, NULL);
-
-    return 0;
-}
-
-void *manager_thread(void *arg)
-{
-    thread_pool_t *pool = (thread_pool_t *)arg;
-
     printf("%s\n", "Shell version 1.2 Created January 2023\n");
     help();
 
@@ -63,16 +51,31 @@ void *manager_thread(void *arg)
         if (strlen(userInput) > 0)
         {
             errorCode = parseInput(userInput);
+
             if (errorCode == -1)
             {
-                pthread_join((*pool).threads[0], NULL);
-                pthread_join((*pool).threads[1], NULL);
+                printf("Entering here");
+                pthread_join(pool.threads[0], NULL);
+                pthread_join(pool.threads[1], NULL);
                 exit(99); // ignore all other errors
             }
 
             memset(userInput, 0, sizeof(userInput));
         }
     }
+
+    pthread_join(pool.threads[0], NULL);
+    pthread_join(pool.threads[1], NULL);
+
+    pthread_mutex_destroy(&pool.lock);
+    pthread_mutex_destroy(&pool.queue_lock);
+    pthread_cond_destroy(&pool.work_ready);
+
+    return 0;
+}
+
+void *manager_thread(void *arg)
+{
 
     return NULL;
 }

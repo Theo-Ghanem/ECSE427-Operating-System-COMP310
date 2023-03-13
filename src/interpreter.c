@@ -274,7 +274,7 @@ int quit()
 	printf("%s\n", "Bye!");
 	if (MT_flag == 1)
 	{
-		sleep(2);
+		wait_for_threads();
 	}
 	exit(0);
 }

@@ -12,6 +12,7 @@
 int run_scheduler = 0;
 char *pol;
 thread_pool_t *pool;
+int MT;
 
 int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
@@ -76,7 +77,12 @@ int rr(int delta)
 
     while (ready_queue_is_empty() == 0)
     {
+        if (MT == 1)
+            pthread_mutex_lock(&(pool->queue_lock));
         SCRIPT_PCB *current_pcb = dequeue_ready_queue();
+        if (MT == 1)
+            pthread_mutex_unlock(&(pool->queue_lock));
+
         int start_pos = current_pcb->start_pos;
         int script_len = current_pcb->script_len;
         char *name = current_pcb->name;
@@ -92,7 +98,11 @@ int rr(int delta)
             current_instruction = current_pcb->current_instruction;
             if (current_instruction % delta == 0 && current_instruction < script_len)
             {
+                if (MT == 1)
+                    pthread_mutex_lock(&(pool->queue_lock));
                 enqueue_ready_queue(current_pcb);
+                if (MT == 1)
+                    pthread_mutex_unlock(&(pool->queue_lock));
                 break;
             }
         }
@@ -192,34 +202,27 @@ int startSchedulerMT(char *policy) //
 {
     pol = policy;
     pthread_mutex_lock(&(pool->lock));
-    pool->work_to_do = 2;
+    MT = 1;
     pthread_cond_broadcast(&(pool->work_ready));
     pthread_mutex_unlock(&(pool->lock));
 
     return 0;
 }
 
-
-
 void *worker_thread_func(void *arg)
 {
     thread_pool_t *pool = (thread_pool_t *)arg;
-    while (1)
-    {
-        pthread_mutex_lock(&(pool->lock));
+    pthread_mutex_lock(&(pool->lock));
 
-        while (pool->work_to_do == 0)
-        {
-            pthread_cond_wait(&(pool->work_ready), &(pool->lock));
-        }
-        pool->work_to_do = --pool->work_to_do;
-        pthread_mutex_unlock(&(pool->lock));
+    pthread_cond_wait(&(pool->work_ready), &(pool->lock));
 
-        printf("Thread starting scheduler\n");
-        startScheduler(pol);
-        printf("Thread finished scheduler\n");
-        
-    }
+    pool->work_to_do = --pool->work_to_do;
+    pthread_mutex_unlock(&(pool->lock));
+
+    // printf("Thread starting scheduler\n");
+    startScheduler(pol);
+    // printf("Thread finished scheduler\n");
+
     return NULL;
 }
 
@@ -227,11 +230,23 @@ void init_thread_pool(thread_pool_t *pl)
 {
     int i;
     pool = pl;
+    MT = 0;
     pool->work_to_do = 0;
     pthread_cond_init(&(pool->work_ready), NULL);
     pthread_mutex_init(&(pool->lock), NULL);
+    pthread_mutex_init(&(pool->queue_lock), NULL);
     for (i = 0; i < 2; i++)
     {
         pthread_create(&(pool->threads[i]), NULL, &worker_thread_func, (void *)pool);
+    }
+}
+
+void wait_for_threads()
+{
+    int i;
+    for (i = 0; i < 2; i++)
+    {
+        if (pool->threads[i] != pthread_self())
+            pthread_join(pool->threads[i], NULL);
     }
 }
