@@ -197,6 +197,7 @@ int startSchedulerMT(char *policy) //
 {
     pol = policy;
     pthread_mutex_lock(&(pool->lock));
+    pool->work_to_do = 2;
     pthread_cond_broadcast(&(pool->work_ready));
     pthread_mutex_unlock(&(pool->lock));
 
@@ -212,8 +213,11 @@ void *worker_thread_func(void *arg)
     {
         pthread_mutex_lock(&(pool->lock));
 
-        pthread_cond_wait(&(pool->work_ready), &(pool->lock));
-        
+        while (pool->work_to_do == 0)
+        {
+            pthread_cond_wait(&(pool->work_ready), &(pool->lock));
+        }
+        pool->work_to_do = --pool->work_to_do;
         pthread_mutex_unlock(&(pool->lock));
 
         printf("Thread starting scheduler\n");

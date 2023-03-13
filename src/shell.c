@@ -28,9 +28,7 @@ int main(int argc, char *argv[])
     pthread_t manager;
     pthread_create(&manager, NULL, &manager_thread, (void *)&pool);
 
-    pthread_join(pool.threads[0], NULL);
-    pthread_join(pool.threads[1], NULL);
-    //pthread_join(manager, NULL);
+    pthread_join(manager, NULL);
 
     return 0;
 }
@@ -62,15 +60,18 @@ void *manager_thread(void *arg)
         {
             errorCode = parseInput(userInput);
             if (errorCode == -1)
+            {
+                pthread_join((*pool).threads[0], NULL);
+                pthread_join((*pool).threads[1], NULL);
                 exit(99); // ignore all other errors
+            }
+
             memset(userInput, 0, sizeof(userInput));
         }
     }
 
     return NULL;
 }
-
-
 
 int parseInput(char ui[])
 {
