@@ -47,7 +47,7 @@ void enqueue_ready_queue(SCRIPT_PCB *pcb)
     }
 }
 
-// We are not suing this one yet, but it might come in handy later
+// We are not using this function, but it might come in handy later  
 // Function to add a new PCB in the right spot in the ready queue based on its job_length_score
 void place_in_ready_queue(SCRIPT_PCB *pcb)
 {
@@ -218,7 +218,6 @@ void reorder_ready_queue()
     }
 
 }
-
 
 // Decrement the job length score of all jobs in the ready queue except the current job
 void decrement_job_length_score(SCRIPT_PCB *current_job)

@@ -142,7 +142,6 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 		}
 	}
 
-	// printf("Saving to memory, start line: %d\n", startLine);
 	//  save lines into memory contiguously
 	fgets(line, 999, p); // read the first line
 
@@ -154,11 +153,8 @@ int mem_load_script(char *script, int *memLocation, int *memSize)
 		char name[100];
 		sprintf(name, "%s_%d", script, index);
 
-		// printf("mem addr: %s\n", name);
 		shellmemory[currentLine].var = strdup(name);
 		shellmemory[currentLine].value = strdup(line);
-
-		// printf("Mem value:'%s'\n", shellmemory[currentLine].value);
 
 		memset(line, 0, sizeof(line)); // empty the string
 		memset(line, 0, sizeof(name));

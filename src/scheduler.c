@@ -25,10 +25,7 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
 
     char instr[100];
     sprintf(instr, "%s_%d", name, current_instruction);
-
-    // printf("Var name: %s\n", instr);
     char *token = mem_get_value(instr);
-    // printf("Token: %s\n", token);
 
     if (token == NULL)
     {
@@ -38,7 +35,6 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
     else
     {
         strcpy(instruction, token);
-        // printf("Instruction: %s\n", instruction);
     }
 
     return errCode;
@@ -49,7 +45,6 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
 // This is also used for Shortest Job First, we enqued the processes based on their job length.
 int fcfs()
 {
-    // printf("Running FCFS scheduler\n");
     int errCode = 0;
 
     while (ready_queue_is_empty() != 1)
