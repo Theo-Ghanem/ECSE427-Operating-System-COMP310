@@ -27,9 +27,8 @@ int main(int argc, char *argv[])
 
     pthread_t manager;
     pthread_create(&manager, NULL, &manager_thread, (void *)&pool);
-    end_it_all();
-    pthread_join(pool.threads[0], NULL);
-    pthread_join(pool.threads[1], NULL);
+
+    pthread_join(manager, NULL);
 
     return 0;
 }
@@ -57,19 +56,14 @@ void *manager_thread(void *arg)
         }
 
         fgets(userInput, MAX_USER_INPUT - 1, stdin); // get user input
-        if (feof(stdin)){
-			freopen("/dev/tty", "r", stdin);
-		}
         if (strlen(userInput) > 0)
         {
             errorCode = parseInput(userInput);
             if (errorCode == -1)
             {
-                end_it_all();
-                pthread_cond_broadcast(&(pool->work_ready));
                 pthread_join((*pool).threads[0], NULL);
                 pthread_join((*pool).threads[1], NULL);
-                return NULL;
+                exit(99); // ignore all other errors
             }
 
             memset(userInput, 0, sizeof(userInput));
@@ -86,7 +80,7 @@ int parseInput(char ui[])
     int a = 0;
     int b;
     int w = 0; // wordID
-    int errorCode = 0;
+    int errorCode = 1;
 
     if (ui == NULL) // check if input is null (end of file)
     {

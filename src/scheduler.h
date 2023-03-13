@@ -9,12 +9,10 @@ typedef struct thread_pool
     pthread_cond_t work_ready;
     pthread_mutex_t lock;
     int work_to_do;
-    int end;
 } thread_pool_t;
 
 // Function to run the scheduler
 void startScheduler(char *pol);
 int startSchedulerMT(char *pol);
 void init_thread_pool(thread_pool_t *pl);
-void end_it_all();
 #endif

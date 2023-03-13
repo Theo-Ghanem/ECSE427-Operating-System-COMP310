@@ -12,7 +12,6 @@
 int run_scheduler = 0;
 char *pol;
 thread_pool_t *pool;
-int end;
 
 int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
@@ -120,7 +119,7 @@ int aging() // original one
         int current_instruction = current_job->current_instruction;
         char *instruction = malloc(sizeof(char) * 100);
         errCode = get_instruction(instruction, current_job->name, current_job->start_pos, current_instruction, current_job->script_len);
-        errCode = parseInput(instruction);
+        parseInput(instruction);
         free(instruction);
         increment_instruction(current_job);
 
@@ -200,11 +199,12 @@ int startSchedulerMT(char *policy) //
     return 0;
 }
 
+
+
 void *worker_thread_func(void *arg)
 {
-
     thread_pool_t *pool = (thread_pool_t *)arg;
-    while (end == 0)
+    while (1)
     {
         pthread_mutex_lock(&(pool->lock));
 
@@ -215,7 +215,10 @@ void *worker_thread_func(void *arg)
         pool->work_to_do = --pool->work_to_do;
         pthread_mutex_unlock(&(pool->lock));
 
+        printf("Thread starting scheduler\n");
         startScheduler(pol);
+        printf("Thread finished scheduler\n");
+        
     }
     return NULL;
 }
@@ -224,7 +227,6 @@ void init_thread_pool(thread_pool_t *pl)
 {
     int i;
     pool = pl;
-    end = 0;
     pool->work_to_do = 0;
     pthread_cond_init(&(pool->work_ready), NULL);
     pthread_mutex_init(&(pool->lock), NULL);
@@ -232,9 +234,4 @@ void init_thread_pool(thread_pool_t *pl)
     {
         pthread_create(&(pool->threads[i]), NULL, &worker_thread_func, (void *)pool);
     }
-}
-
-void end_it_all()
-{
-    end = 1;
 }
