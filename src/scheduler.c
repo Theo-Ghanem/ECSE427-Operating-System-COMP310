@@ -211,6 +211,11 @@ void *worker_thread_func(void *arg)
         while (pool->work_to_do == 0)
         {
             pthread_cond_wait(&(pool->work_ready), &(pool->lock));
+            if (end == 1)
+            {
+                pthread_mutex_unlock(&(pool->lock));
+                return NULL;
+            }
         }
         pool->work_to_do = --pool->work_to_do;
         pthread_mutex_unlock(&(pool->lock));
