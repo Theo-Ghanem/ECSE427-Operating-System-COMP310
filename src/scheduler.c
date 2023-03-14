@@ -14,6 +14,7 @@ char *pol;
 thread_pool_t *pool;
 int MT;
 
+// get the instruction from memory
 int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
     int errCode = 0;
@@ -24,6 +25,8 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
         return errCode;
     }
 
+    // get intruction from memory according to the name of the script and the current instruction
+    // the instruction is stored in the memory as "name_current_instruction"
     char instr[100];
     sprintf(instr, "%s_%d", name, current_instruction);
     char *token = mem_get_value(instr);
@@ -35,7 +38,7 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
     }
     else if (strcmp(token, "Variable does not exist") == 0)
     {
-        // do nothing
+        errCode = 1;
     }
     else
     {
@@ -54,6 +57,7 @@ int fcfs()
 
     while (ready_queue_is_empty() != 1)
     {
+        // retrieve info from PCB
         SCRIPT_PCB *current_pcb = dequeue_ready_queue();
         int start_pos = current_pcb->start_pos;
         int script_len = current_pcb->script_len;
@@ -61,6 +65,7 @@ int fcfs()
         int current_instruction = -1;
         while (current_instruction < script_len - 1)
         {
+            // exectute all instructions in the script from memory
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
@@ -68,31 +73,36 @@ int fcfs()
             free(instruction);
             increment_instruction(current_pcb);
         }
+        // clear memory when the process is complete
         mem_free_script(start_pos, script_len);
         free_script_pcb(current_pcb);
     }
     return errCode;
 }
 
-// Round Robin scheduling policy
+// Round Robin scheduling policy works for any delta (2 or 30)
 int rr(int delta)
 {
     int errCode = 0;
 
     while (ready_queue_is_empty() == 0)
     {
+        // get first process from ready queue
+        // lock the ready queue if in multi-threaded mode
         if (MT == 1)
             pthread_mutex_lock(&(pool->queue_lock));
         SCRIPT_PCB *current_pcb = dequeue_ready_queue();
         if (MT == 1)
             pthread_mutex_unlock(&(pool->queue_lock));
 
+        // retrieve info from PCB
         int start_pos = current_pcb->start_pos;
         int script_len = current_pcb->script_len;
         char *name = current_pcb->name;
         int current_instruction = current_pcb->current_instruction;
         while (current_instruction < script_len)
         {
+            // execute delta instructions from memory
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
@@ -102,6 +112,8 @@ int rr(int delta)
             current_instruction = current_pcb->current_instruction;
             if (current_instruction % delta == 0 && current_instruction < script_len)
             {
+                // lock the ready queue if in multi-threaded mode
+                // enqueue the process back to the ready queue if not completed
                 if (MT == 1)
                     pthread_mutex_lock(&(pool->queue_lock));
                 enqueue_ready_queue(current_pcb);
@@ -113,8 +125,12 @@ int rr(int delta)
         // only clear memory when the process is complete
         if (current_instruction >= script_len)
         {
+            if (MT == 1)
+                pthread_mutex_unlock(&(pool->queue_lock));
             mem_free_script(start_pos, script_len);
             free_script_pcb(current_pcb);
+            if (MT == 1)
+                pthread_mutex_unlock(&(pool->queue_lock));
         }
     }
 
@@ -122,7 +138,7 @@ int rr(int delta)
 }
 
 // Aging scheduling policy
-int aging() // original one
+int aging()
 {
     int errCode = 0;
     SCRIPT_PCB *current_job = peek_ready_queue(); // Get the next job to run
@@ -192,22 +208,18 @@ void startScheduler(char *policy)
 }
 
 // Part 3 Multithreaded scheduler
-void *poll_scheduler(void *arg) //
-{
-    while (run_scheduler == 0)
-    {
-    }
-    char *policy = (char *)arg;
-    startScheduler(policy);
-    return NULL;
-}
-
 int startSchedulerMT(char *policy) //
 {
     pol = policy;
+
     pthread_mutex_lock(&(pool->lock));
+
+    // set the MT flag to 1 for multi-threaded mode
     MT = 1;
+
+    // send the worker threads off by boradcasting a signal
     pthread_cond_broadcast(&(pool->work_ready));
+
     pthread_mutex_unlock(&(pool->lock));
 
     return 0;
@@ -216,11 +228,11 @@ int startSchedulerMT(char *policy) //
 void *worker_thread_func(void *arg)
 {
     thread_pool_t *pool = (thread_pool_t *)arg;
+
     pthread_mutex_lock(&(pool->lock));
 
     pthread_cond_wait(&(pool->work_ready), &(pool->lock));
 
-    pool->work_to_do = --pool->work_to_do;
     pthread_mutex_unlock(&(pool->lock));
 
     // printf("Thread starting scheduler\n");
@@ -232,14 +244,16 @@ void *worker_thread_func(void *arg)
 
 void init_thread_pool(thread_pool_t *pl)
 {
-    int i;
     pool = pl;
     MT = 0;
-    pool->work_to_do = 0;
+
+    // initialize mutex and condition variable objects for multithreading mode
     pthread_cond_init(&(pool->work_ready), NULL);
     pthread_mutex_init(&(pool->lock), NULL);
     pthread_mutex_init(&(pool->queue_lock), NULL);
-    for (i = 0; i < 2; i++)
+
+    // create worker threads
+    for (int i = 0; i < 2; i++)
     {
         pthread_create(&(pool->threads[i]), NULL, &worker_thread_func, (void *)pool);
     }
@@ -247,8 +261,8 @@ void init_thread_pool(thread_pool_t *pl)
 
 void wait_for_threads()
 {
-    int i;
-    for (i = 0; i < 2; i++)
+    // wait for worker threads to finish unless it is the worker thread itself
+    for (int i = 0; i < 2; i++)
     {
         if (pool->threads[i] != pthread_self())
             pthread_join(pool->threads[i], NULL);

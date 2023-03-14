@@ -47,7 +47,7 @@ void enqueue_ready_queue(SCRIPT_PCB *pcb)
     }
 }
 
-// We are not using this function, but it might come in handy later  
+// We are not using this function, but it might come in handy later
 // Function to add a new PCB in the right spot in the ready queue based on its job_length_score
 void place_in_ready_queue(SCRIPT_PCB *pcb)
 {
@@ -64,7 +64,7 @@ void place_in_ready_queue(SCRIPT_PCB *pcb)
         {
             current = current->next;
         }
-        
+
         // assign to that spot and rearrage pointers
         SCRIPT_PCB *temp = current->next;
         current->next = pcb;
@@ -152,9 +152,6 @@ SCRIPT_PCB *find_shortest_job()
     {
         SCRIPT_PCB *current = ready_queue->head;
         SCRIPT_PCB *shortest = current;
-        SCRIPT_PCB *tmp1 = NULL;
-        SCRIPT_PCB *tmp2 = NULL;
-        SCRIPT_PCB *tmp3 = NULL;
         while (current != NULL)
         {
             if (current->job_length_score < shortest->job_length_score)
@@ -204,7 +201,8 @@ void reorder_ready_queue()
         move_to_front(shortest); // move the shortest job to the front of the queue
 
         // Sort the queue by job length score
-        if (get_number_of_jobs_in_ready_queue() == 3){ //igonring the head because it is in the right spot already
+        if (get_number_of_jobs_in_ready_queue() == 3)
+        { // igonring the head because it is in the right spot already
             SCRIPT_PCB *script2 = ready_queue->head->next;
             SCRIPT_PCB *script3 = ready_queue->head->next->next;
             if (script2->job_length_score > script3->job_length_score)
@@ -216,7 +214,6 @@ void reorder_ready_queue()
         }
         return;
     }
-
 }
 
 // Decrement the job length score of all jobs in the ready queue except the current job
@@ -234,6 +231,7 @@ void decrement_job_length_score(SCRIPT_PCB *current_job)
     }
 }
 
+// Used for debugging
 void print_ready_queue()
 {
     SCRIPT_PCB *tmp_job = NULL;
@@ -245,7 +243,7 @@ void print_ready_queue()
     printf("\n");
 }
 
-// dequeue a specific PCB and move it to the front of the ready queue
+// Dequeue a specific PCB and move it to the front of the ready queue
 void move_to_front(SCRIPT_PCB *target)
 {
     SCRIPT_PCB *current = ready_queue->head;
@@ -276,6 +274,7 @@ void move_to_front(SCRIPT_PCB *target)
     }
 }
 
+// Returns the number of jobs in the ready queue
 int get_number_of_jobs_in_ready_queue()
 {
     int count = 0;

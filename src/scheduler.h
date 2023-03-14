@@ -9,7 +9,6 @@ typedef struct thread_pool
     pthread_cond_t work_ready;
     pthread_mutex_t lock;
     pthread_mutex_t queue_lock;
-    int work_to_do;
 } thread_pool_t;
 
 // Function to run the scheduler

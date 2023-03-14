@@ -542,7 +542,7 @@ int exec(char *args[], int argSize, char *pol, int MT)
 
 	if (strcmp(pol, "FCFS") == 0 || strcmp(pol, "RR") == 0 || strcmp(pol, "RR30") == 0)
 	{
-		// load all scripts into memory and add them to the ready queue
+		// load all scripts into memory in any order and add them to the ready queue
 		for (int i = 1; i < argSize - 1; i++)
 		{
 			loadScript(args[i]);
@@ -553,12 +553,6 @@ int exec(char *args[], int argSize, char *pol, int MT)
 	// The program with the fewest lines of code is enqueued first so it can be executed first.
 	else if (strcmp(pol, "SJF") == 0 || (strcmp(pol, "AGING") == 0))
 	{
-		// printf("Here is the order BEFORE rearranging:\n");
-		// for (int i = 1; i < argSize - 1; i++)
-		// {
-		// 	printf("%s has length: %d \n", args[i], count_lines(args[i]));
-		// }
-
 		// compare all scripts and reorder them in ascending order of length
 		if (argSize > 3) // if there is more than one script
 		{
@@ -574,16 +568,10 @@ int exec(char *args[], int argSize, char *pol, int MT)
 					}
 				}
 			}
-			// printf("Here is the order AFTER rearranging:\n");
-			// for (int i = 1; i < argSize - 1; i++)
-			// {
-			// 	printf("%s has length: %d \n", args[i], count_lines(args[i]));
-			// }
 		}
 
 		for (int i = 1; i < argSize - 1; i++)
 		{
-			// printf("loading script");
 			loadScript(args[i]);
 		}
 	}

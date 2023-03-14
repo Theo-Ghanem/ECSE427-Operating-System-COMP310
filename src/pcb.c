@@ -31,6 +31,7 @@ void free_script_pcb(SCRIPT_PCB *pcb)
     pcb = NULL; //! added this, if we ever have problems refer back to this
 }
 
+// Function to increment the current instruction of a PCB
 int increment_instruction(SCRIPT_PCB *pcb)
 {
     int instr = pcb->current_instruction;

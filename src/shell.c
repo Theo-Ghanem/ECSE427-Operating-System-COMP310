@@ -54,30 +54,26 @@ int main(int argc, char *argv[])
 
             if (errorCode == -1)
             {
-                printf("Entering here");
+                // if error, wait for all threads to complete then end
                 pthread_join(pool.threads[0], NULL);
                 pthread_join(pool.threads[1], NULL);
-                exit(99); // ignore all other errors
+                exit(99);
             }
 
             memset(userInput, 0, sizeof(userInput));
         }
     }
 
+    // wait for all threads to complete then end
     pthread_join(pool.threads[0], NULL);
     pthread_join(pool.threads[1], NULL);
 
+    // clean up multi-threading
     pthread_mutex_destroy(&pool.lock);
     pthread_mutex_destroy(&pool.queue_lock);
     pthread_cond_destroy(&pool.work_ready);
 
     return 0;
-}
-
-void *manager_thread(void *arg)
-{
-
-    return NULL;
 }
 
 int parseInput(char ui[])
