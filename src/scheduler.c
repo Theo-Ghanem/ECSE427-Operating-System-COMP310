@@ -33,6 +33,10 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
         errCode = 1;
         return errCode;
     }
+    else if (strcmp(token, "Variable does not exist") == 0)
+    {
+        // do nothing
+    }
     else
     {
         strcpy(instruction, token);
