@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change this variable to run another assignment tests
-search_dir=$(pwd)/../testcases/assignment2
+search_dir=$(pwd)/../testcases/assignment3
 
 echo
 echo -e "Running all test cases in \033[1m$(basename ${search_dir})/\033[0m:"
@@ -13,15 +13,6 @@ failed_test_cases=0
 for file in "$search_dir"/*.txt
 do
   if [[ $file == *_result*.txt ]]; then
-    continue
-  fi
-  if [[ $file == P_* ]]; then
-    continue
-  fi
-  if [[ $file == T_MT* ]]; then
-    continue
-  fi
-  if [[ $file == T_AGING* ]]; then
     continue
   fi
 

@@ -8,10 +8,10 @@ make mysh
 cd ..
 cp src/mysh env/mysh
 chmod +x env/mysh
-cp src/test_runner_A2.sh env/test_runner_A2.sh
-chmod +x env/test_runner_A2.sh
-cp -a testcases/assignment2/. env/
+cp src/test_runner_A3.sh env/test_runner_A3.sh
+chmod +x env/test_runner_A3.sh
+cp -a testcases/assignment3/. env/
 cd env
-./test_runner_A2.sh
+./test_runner_A3.sh
 cd ..
 rm -r env
