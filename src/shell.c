@@ -7,6 +7,7 @@
 #include "shellmemory.h"
 #include "ready_queue.h"
 #include "scheduler.h"
+#include "paging.h"
 
 void *manager_thread(void *arg);
 
@@ -21,6 +22,9 @@ int main(int argc, char *argv[])
 
     // init the ready queue [For Assignment 2]
     queue_init();
+
+    // Setting  up  the  backing store for  paging [For Assignment 3]
+    init_backing_store();
 
     thread_pool_t pool;
     init_thread_pool(&pool);

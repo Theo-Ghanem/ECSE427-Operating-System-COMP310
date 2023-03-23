@@ -10,6 +10,7 @@
 #include "shell.h"
 #include "pcb.h"
 #include "scheduler.h"
+#include "paging.h"
 
 int MAX_ARGS_SIZE = 7; // This was 3 initially, but changed to 7 for set function
 int MT_flag = 0;
@@ -276,6 +277,7 @@ int quit()
 	{
 		wait_for_threads();
 	}
+	delete_backing_store();
 	exit(0);
 }
 
