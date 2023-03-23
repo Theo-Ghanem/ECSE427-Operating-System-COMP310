@@ -530,17 +530,17 @@ int exec(char *args[], int argSize, char *pol, int MT)
 		return badcommandExec();
 	}
 
-	// check for duplicate file names
-	for (int i = 1; i < argSize - 1; i++)
-	{
-		for (int j = i + 1; j < argSize - 1; j++)
-		{
-			if (strcmp(args[i], args[j]) == 0)
-			{
-				return badcommandExecFiles();
-			}
-		}
-	}
+	// check for duplicate file names [Don't need this for Assignment 3]
+	// for (int i = 1; i < argSize - 1; i++)
+	// {
+	// 	for (int j = i + 1; j < argSize - 1; j++)
+	// 	{
+	// 		if (strcmp(args[i], args[j]) == 0)
+	// 		{
+	// 			return badcommandExecFiles();
+	// 		}
+	// 	}
+	// }
 
 	if (strcmp(pol, "FCFS") == 0 || strcmp(pol, "RR") == 0 || strcmp(pol, "RR30") == 0)
 	{
