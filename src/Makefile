@@ -8,3 +8,9 @@ clean:
 debug: shell.c interpreter.c shellmemory.c
 	gcc -c -g shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c paging.c
 	gcc -o mysh shell.o interpreter.o shellmemory.o pcb.o ready_queue.o scheduler.o paging.0
+
+run: shell.c interpreter.c shellmemory.c
+	rm -f mysh; rm -f *.o
+	gcc -c shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c paging.c
+	gcc -o mysh shell.o interpreter.o shellmemory.o pcb.o ready_queue.o scheduler.o paging.o
+	./mysh
