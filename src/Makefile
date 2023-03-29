@@ -1,16 +1,24 @@
-mysh: shell.c interpreter.c shellmemory.c
-	gcc -c shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c paging.c
-	gcc -o mysh shell.o interpreter.o shellmemory.o pcb.o ready_queue.o scheduler.o paging.o
+# Default values for frame store size and variable store size
+framesize = 600
+varmemsize = 400
 
-clean: 
-	rm mysh; rm *.o
+# Compile the source files and link them into an executable
+mysh: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	gcc -D FRAME_STORE_SIZE=$(framesize) -D VAR_STORE_SIZE=$(varmemsize) -c shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	gcc -o mysh shell.o interpreter.o shellmemory.o pcb.o ready_queue.o scheduler.o disk.o
 
-debug: shell.c interpreter.c shellmemory.c
-	gcc -c -g shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c paging.c
-	gcc -o mysh shell.o interpreter.o shellmemory.o pcb.o ready_queue.o scheduler.o paging.0
+# Clean up object files and executable
+clean:
+	rm -f mysh
+	rm -f *.o
 
-run: shell.c interpreter.c shellmemory.c
-	rm -f mysh; rm -f *.o
-	gcc -c shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c paging.c
-	gcc -o mysh shell.o interpreter.o shellmemory.o pcb.o ready_queue.o scheduler.o paging.o
+# Debugging build
+debug: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	gcc -D FRAME_STORE_SIZE=$(framesize) -D VAR_STORE_SIZE=$(varmemsize) -c -g shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	gcc -o mysh shell.o interpreter.o shellmemory.o pcb.o ready_queue.o scheduler.o disk.o
+
+# Build and run the shell
+run: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
 	./mysh

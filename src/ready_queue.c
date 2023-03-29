@@ -47,6 +47,21 @@ void enqueue_ready_queue(SCRIPT_PCB *pcb)
     }
 }
 
+// find pcb in redy queue by name
+SCRIPT_PCB *find_pcb_in_ready_queue(char *name)
+{
+    SCRIPT_PCB *current = ready_queue->head;
+    while (current != NULL)
+    {
+        if (strcmp(current->name, name) == 0)
+        {
+            return current;
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
 // We are not using this function, but it might come in handy later
 // Function to add a new PCB in the right spot in the ready queue based on its job_length_score
 void place_in_ready_queue(SCRIPT_PCB *pcb)

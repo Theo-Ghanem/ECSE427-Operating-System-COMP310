@@ -10,7 +10,7 @@
 #include "shell.h"
 #include "pcb.h"
 #include "scheduler.h"
-#include "paging.h"
+#include "disk.h"
 
 int MAX_ARGS_SIZE = 7; // This was 3 initially, but changed to 7 for set function
 int MT_flag = 0;
@@ -309,19 +309,18 @@ int loadScript(char *script)
 	int scriptLineSize;
 	int scriptLocation;
 
-	// load code into memory
-	errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
+	// load code onto disk
+	errCode = store_script(script);
 
-	if (errCode != 0)
-	{
-		printf("error loading script into memory: %d\n", errCode);
-		return errCode;
-	}
+	// get number of lines of the script
+	scriptLineSize = get_number_lines(script);
 
-	// printf("creating pcb\n");
-	//  create PCB
+	// create PCB
 	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
-	errCode = create_script_pcb(pcb, script, scriptLocation, scriptLineSize);
+	errCode = create_script_pcb(pcb, script, scriptLineSize);
+
+	// load code into memory
+	// errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
 
 	return errCode;
 }

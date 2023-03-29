@@ -1,7 +1,16 @@
+#define FRAME_SIZE 3
+
+#ifndef FRAME_STORE_SIZE
+#define FRAME_STORE_SIZE 600
+#define VAR_STORE_SIZE 500
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "ready_queue.h"
+#include "pcb.h"
 
 struct memory_struct
 {
@@ -10,6 +19,12 @@ struct memory_struct
 };
 
 struct memory_struct shellmemory[1000];
+int var_mem_start = FRAME_STORE_SIZE + 1;
+int var_mem_end = 1000;
+int var_count = 0;								 // number of variables currently stored in the variable store
+int var_index = FRAME_STORE_SIZE + 1;			 // index of the first available line in the variable store
+int frame_index = 0;							 // index of the next available frame in the frame store
+char *frame_store[FRAME_STORE_SIZE][FRAME_SIZE]; // array of arrays representing the frame store
 
 // Helper functions
 int match(char *model, char *var)
@@ -55,24 +70,30 @@ void mem_init()
 void mem_set_value(char *var_in, char *value_in)
 {
 
-	int i;
-
-	for (i = 0; i < 1000; i++)
+	if (var_count >= var_mem_end - var_mem_start) // if the variable store is full
 	{
-		if (strcmp(shellmemory[i].var, var_in) == 0)
+		printf("Variable store full, unable to store variable %s.\n", var_in);
+		return;
+	}
+
+	for (int i = var_mem_start; i < var_mem_end; i++)
+	{
+		if (strcmp(shellmemory[i].var, var_in) == 0) // if the variable already exists
 		{
-			shellmemory[i].value = strdup(value_in);
+			shellmemory[i].value = strdup(value_in); // update the value
 			return;
 		}
 	}
 
 	// Value does not exist, need to find a free spot.
-	for (i = 0; i < 1000; i++)
+	for (int i = var_mem_start; i < var_mem_end; i++)
 	{
-		if (strcmp(shellmemory[i].var, "none") == 0)
+		if (strcmp(shellmemory[i].var, "none") == 0) // if the spot is empty
 		{
 			shellmemory[i].var = strdup(var_in);
 			shellmemory[i].value = strdup(value_in);
+			var_count++;
+			var_index++;
 			return;
 		}
 	}
@@ -85,7 +106,7 @@ char *mem_get_value(char *var_in)
 {
 	int i;
 
-	for (i = 0; i < 1000; i++)
+	for (i = var_mem_start; i < var_mem_end; i++)
 	{
 		if (strcmp(shellmemory[i].var, var_in) == 0)
 		{
@@ -96,78 +117,95 @@ char *mem_get_value(char *var_in)
 	return "Variable does not exist";
 }
 
-// A2 1.2.1 Code loading I think
-int mem_load_script(char *script, int *memLocation, int *memSize)
+// helper function to find free frame in memory
+int find_free_frame()
 {
+	for (int i = 0; i < var_mem_start; i += 3)
+	{
+		if (strcmp(shellmemory[i].var, "none") == 0)
+		{
+			return i / 3;
+		}
+	}
+	return -1;
+}
 
-	int errCode = 0;
-	char line[1000];
-	FILE *p = fopen(script, "rt"); // the program is in a file
+// load specified number of frames from script in memory starting at current frame
+// a negative number of frames will load all frames from the script
+void load_page_from_disk(char *script, int num_frames)
+{
+	SCRIPT_PCB *pcb = find_pcb_in_ready_queue(script);
+	if (pcb == NULL)
+	{
+		printf("Script not found in ready queue.\n");
+		return;
+	}
+
+	int script_size = pcb->script_len;
+	int current_instruction = pcb->current_instruction;
+	int current_page = current_instruction / 3;
+	int max_num_pages = pcb->num_pages;
+	int *page_table = pcb->page_table;
+
+	if (num_frames < 0)
+	{
+		num_frames = max_num_pages;
+	}
+	else if (num_frames + current_page > max_num_pages)
+	{
+		// safely fix the value; invisible to the user
+		num_frames = max_num_pages - current_page;
+	}
+
+	// open the script file
+	char *script_disk = strcat("backing_store/", script);
+	FILE *p = fopen(script_disk, "rt");
 
 	if (p == NULL) // if the file does not exist
 	{
 		printf("File does not exist\n");
-		return 1;
+		return;
 	}
+	char line[100];
 
-	// count number of lines in file to find contiguous space in memory for it
-	int lines = 0;
-	char ch;
-
-	FILE *p2 = fopen(script, "rt");
-	while (!feof(p2))
+	// skip to the current page
+	for (int i = 0; i < current_page; i++)
 	{
-		ch = fgetc(p2);
-		if (ch == '\n')
-		{
-			lines++;
-		}
+		fgets(line, 99, p);
 	}
-	fclose(p2);
-	lines++; // add one for the last line (EOF)
 
-	// find contiguous space in memory for the file
-	int startLine = 0;
-	int contiguousFreeLines = 0;
-	for (int i = 0; i < 1000 && contiguousFreeLines <= lines; i++)
+	// load the specified number of frames from the script
+	for (int i = current_page; i < num_frames; i++)
 	{
-		if (strcmp(shellmemory[i].var, "none") == 0) // if the line is free
+		// find free frame in memory
+		int frame_index = find_free_frame();
+		if (frame_index == -1)
 		{
-			contiguousFreeLines++;
+			printf("No free frames in memory.\n");
+			return;
 		}
-		else
+
+		// write UP TO 3 instructions to the frame
+		for (int j = 0; j < 3 && current_instruction <= script_size; j++)
 		{
-			contiguousFreeLines = 0;
-			startLine = i;
+			// create unique ID for program line
+			// format: scriptname_page#_line#
+			char name[100];
+			sprintf(name, "%s_page%d_line%d", script, i, current_instruction);
+
+			fgets(line, 99, p); // read the next line of the file
+
+			shellmemory[frame_index * 3 + j].var = strdup(name);
+			shellmemory[frame_index * 3 + j].value = strdup(line);
+
+			memset(line, 0, sizeof(line)); // empty the string
+			memset(name, 0, sizeof(name));
+
+			current_instruction++;
 		}
+
+		fclose(p);
 	}
-
-	//  save lines into memory contiguously
-	fgets(line, 999, p); // read the first line
-
-	for (int currentLine = startLine; currentLine <= startLine + lines; currentLine++)
-	{
-
-		//  naming: filename_lineNumber
-		int index = currentLine - startLine;
-		char name[100];
-		sprintf(name, "%s_%d", script, index);
-
-		shellmemory[currentLine].var = strdup(name);
-		shellmemory[currentLine].value = strdup(line);
-
-		memset(line, 0, sizeof(line)); // empty the string
-		memset(line, 0, sizeof(name));
-
-		fgets(line, 999, p);
-	}
-
-	fclose(p);
-
-	*memLocation = startLine;
-	*memSize = lines;
-
-	return errCode;
 }
 
 // A2 1.2.1 Freeing memory

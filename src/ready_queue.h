@@ -24,5 +24,6 @@ SCRIPT_PCB *peek_ready_queue();
 void print_ready_queue();
 void move_to_front(SCRIPT_PCB *target);
 void place_in_ready_queue(SCRIPT_PCB *pcb);
+SCRIPT_PCB *find_pcb_in_ready_queue(char *name);
 
 #endif // READY_QUEUE_H

@@ -7,16 +7,32 @@
 // Function to create a new PCB with the given PID, start position, and script length
 int pid_counter = 0;
 
-int create_script_pcb(SCRIPT_PCB *pcb, char *name, int start_pos, int script_len)
+int create_script_pcb(SCRIPT_PCB *pcb, char *name, int num_lines)
 {
     // Set the fields of the new PCB
     pcb->pid = pid_counter++;
     pcb->name = name;
-    pcb->start_pos = start_pos;
-    pcb->script_len = script_len;
+    pcb->start_pos = 0;          //! this is not used in A3 and should be removed
+    pcb->script_len = num_lines; //! this is not used in A3 and should be removed
     pcb->current_instruction = 0;
-    pcb->job_length_score = script_len; // Initialize job length score to script length
+    pcb->job_length_score = 0; //! this is not used in A3 and should be removed
     pcb->next = NULL;
+
+    int num_pages = num_lines / 3;
+    if (num_lines % 3 != 0)
+    {
+        num_pages++;
+    }
+    pcb->num_pages = num_pages;
+
+    // page table, make an array of ints
+    pcb->page_table = (int *)malloc(num_pages * sizeof(int)); // allocate memory for the page table
+
+    // initialize page table to -1 for all values
+    for (int i = 0; i < num_pages; i++)
+    {
+        pcb->page_table[i] = -1;
+    }
 
     // Add the new PCB to the global ready queue
     enqueue_ready_queue(pcb);
@@ -28,7 +44,7 @@ int create_script_pcb(SCRIPT_PCB *pcb, char *name, int start_pos, int script_len
 void free_script_pcb(SCRIPT_PCB *pcb)
 {
     free(pcb);
-    pcb = NULL; //! added this, if we ever have problems refer back to this
+    pcb = NULL;
 }
 
 // Function to increment the current instruction of a PCB

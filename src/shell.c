@@ -1,3 +1,8 @@
+#ifndef FRAME_STORE_SIZE
+#define FRAME_STORE_SIZE 600
+#define VAR_STORE_SIZE 500
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +12,7 @@
 #include "shellmemory.h"
 #include "ready_queue.h"
 #include "scheduler.h"
-#include "paging.h"
+#include "disk.h"
 
 void *manager_thread(void *arg);
 
@@ -30,6 +35,10 @@ int main(int argc, char *argv[])
     init_thread_pool(&pool);
 
     printf("%s\n", "Shell version 1.2 Created January 2023\n");
+
+    // Print out the frame store size and variable store size
+    printf("Frame Store Size = %d; Variable Store Size = %d\n", FRAME_STORE_SIZE, VAR_STORE_SIZE);
+
     help();
 
     char prompt = '$';              // Shell prompt
