@@ -27,13 +27,12 @@ int create_script_pcb(SCRIPT_PCB *pcb, char *name, int num_lines)
     pcb->num_pages = num_pages;
 
     // page table, make an array of ints
-    // int temp[num_pages];
-    // memcpy(pcb->page_table, temp, sizeof(temp));
+    pcb->page_table = malloc(sizeof(int) * num_pages);
 
     // initialize page table to -1 for all values
-    for (int i = 0; i < num_pages; i++)
+    for (int *i = pcb->page_table; i < pcb->page_table + sizeof(int) * num_pages; i++)
     {
-        pcb->page_table[i] = -1;
+        *i = -1;
     }
 
     // Add the new PCB to the global ready queue

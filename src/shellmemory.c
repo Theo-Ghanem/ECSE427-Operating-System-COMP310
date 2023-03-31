@@ -227,7 +227,8 @@ void load_page_from_disk(char *script, int num_frames)
 		}
 
 		// update page table
-		pcb->page_table[i] = frame_index;
+		int *page_add = pcb->page_table + i;
+		*page_add = frame_index;
 
 		// write UP TO 3 instructions to the frame
 		for (int j = 0; j < 3 && current_instruction <= script_size; j++)

@@ -60,8 +60,10 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
 
     int current_page = current_instruction / 3;
     int page_offset = current_instruction % 3;
-    int *page_table = pcb->page_table;
-    int frame_index = page_table[current_page];
+
+    int *page_add = pcb->page_table + current_page;
+
+    int frame_index = *page_add;
 
     // if frame_index is -1, then the page is not in memory :(
     if (frame_index == -1)
@@ -69,8 +71,10 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
         // load page from disk & update page table
         load_page_from_disk(name, 1);
 
+        page_add = pcb->page_table + current_page + 1;
+
         // update frame_index
-        frame_index = page_table[current_page];
+        frame_index = *page_add;
     }
 
     // get instruction from page according to the page table
