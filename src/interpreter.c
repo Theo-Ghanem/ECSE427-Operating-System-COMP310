@@ -319,8 +319,8 @@ int loadScript(char *script)
 	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
 	errCode = create_script_pcb(pcb, script, scriptLineSize);
 
-	// load code into memory
-	// errCode = mem_load_script(script, &scriptLocation, &scriptLineSize);
+	// load all code into memory
+	load_page_from_disk(script, -1);
 
 	return errCode;
 }

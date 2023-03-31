@@ -10,7 +10,7 @@ cp src/mysh env/mysh
 chmod +x env/mysh
 cp src/test_runner_A3.sh env/test_runner_A3.sh
 chmod +x env/test_runner_A3.sh
-cp -a testcases/assignment3/. env/
+cp -a tc/a3/. env/
 cd env
 ./test_runner_A3.sh
 cd ..

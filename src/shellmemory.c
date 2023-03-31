@@ -12,6 +12,9 @@
 #include "ready_queue.h"
 #include "pcb.h"
 
+
+int get_lru_page();
+void add_node();
 struct memory_struct
 {
 	char *var;
@@ -117,14 +120,43 @@ char *mem_get_value(char *var_in)
 	return "Variable does not exist";
 }
 
+// get value at index
+char *mem_get_value_at_index(int index)
+{
+	if (index > var_mem_start || index >= 0)
+	{
+		return "Index out of bounds";
+	}
+	return strdup(shellmemory[index].value);
+}
+
 // helper function to find free frame in memory
 int find_free_frame()
 {
 	for (int i = 0; i < var_mem_start; i += 3)
 	{
-		if (strcmp(shellmemory[i].var, "none") == 0)
+		
+		if (strcmp(shellmemory[i].var, "none") == 0 || strcmp(shellmemory[i].value, "none") == 0)
 		{
 			return i / 3;
+		}
+		else
+		{
+			int victim_frame = get_lru_page();
+
+			printf("Page fault! Victim page contents:\n");
+			
+			// print the contents of the victim page
+			
+			for (int j = 0; j < FRAME_SIZE; j++)
+			{
+				if(strcmp(shellmemory[victim_frame].value, "none") != 0)
+					printf("%s\n", shellmemory[victim_frame].value);
+			}
+			
+			printf("\nEnd of victim page contents.”");
+			
+			return victim_frame; // if no free frames, return the least recently used page
 		}
 	}
 	return -1;
@@ -145,7 +177,6 @@ void load_page_from_disk(char *script, int num_frames)
 	int current_instruction = pcb->current_instruction;
 	int current_page = current_instruction / 3;
 	int max_num_pages = pcb->num_pages;
-	int *page_table = pcb->page_table;
 
 	if (num_frames < 0)
 	{
@@ -158,8 +189,17 @@ void load_page_from_disk(char *script, int num_frames)
 	}
 
 	// open the script file
-	char *script_disk = strcat("backing_store/", script);
-	FILE *p = fopen(script_disk, "rt");
+	char filename[100];
+	strcpy(filename, "backing_store/");
+
+	// get name of file from script path
+	char *last_slash = strrchr(script, '/');
+    if (last_slash) {
+        strcat(filename, last_slash+1);
+    } else {
+		strcat(filename, script);
+	}
+	FILE *p = fopen(filename, "rt");
 
 	if (p == NULL) // if the file does not exist
 	{
@@ -179,11 +219,15 @@ void load_page_from_disk(char *script, int num_frames)
 	{
 		// find free frame in memory
 		int frame_index = find_free_frame();
+		add_node(frame_index); // add the frame to the tail of the LRU list
 		if (frame_index == -1)
 		{
 			printf("No free frames in memory.\n");
 			return;
 		}
+
+		// update page table
+		pcb->page_table[i] = frame_index;
 
 		// write UP TO 3 instructions to the frame
 		for (int j = 0; j < 3 && current_instruction <= script_size; j++)
@@ -220,4 +264,113 @@ int mem_free_script(int memLocation, int memSize)
 	}
 
 	return errCode;
+}
+
+
+// Definition of a doubly linked list node
+typedef struct Node
+{
+	int key;
+	struct Node *prev;
+	struct Node *next;
+} Node;
+
+// Head and tail of the doubly linked list
+Node *head = NULL;
+Node *tail = NULL;
+
+// Hash table to quickly look up a page number and get a pointer to its corresponding node in the linked list
+Node *hashtable[FRAME_STORE_SIZE / FRAME_SIZE];
+
+// Remove a node from the linked list
+void remove_node(Node *node)
+{
+	if (node->prev == NULL)
+	{
+		// Removing the head node
+		head = node->next;
+	}
+	else
+	{
+		node->prev->next = node->next;
+	}
+	if (node->next == NULL)
+	{
+		// Removing the tail node
+		tail = node->prev;
+	}
+	else
+	{
+		node->next->prev = node->prev;
+	}
+}
+
+// Add a new node to the tail of the linked list
+void add_node(int page)
+{
+	Node *node = (Node *)malloc(sizeof(Node));
+	node->key = page;
+	node->prev = tail;
+	node->next = NULL;
+	if (tail != NULL)
+	{
+		tail->next = node;
+	}
+	tail = node;
+	if (head == NULL)
+	{
+		head = node;
+	}
+	// Update the hash table with a pointer to the new node
+	hashtable[page] = node;
+}
+
+// Move an existing node to the tail of the linked list
+void move_to_tail(Node *node)
+{
+	remove_node(node);
+	node->prev = tail;
+	node->next = NULL;
+	tail->next = node;
+	tail = node;
+}
+
+// Access a page by its page number
+void access_page(int page)
+{
+	// Check if the page is already in the page frames
+	Node *node = hashtable[page];
+	if (node != NULL)
+	{
+		// If the page is already in the page frames, move its corresponding node to the tail of the linked list
+		move_to_tail(node);
+	}
+	else
+	{
+		// If the page is not currently in the page frames, add a new node to the tail of the linked list
+		add_node(page);
+		// If the number of page frames is already at its maximum capacity, remove the head of the linked list (which represents the LRU page)
+		if (head != NULL)
+		{
+			hashtable[head->key] = NULL;
+			remove_node(head);
+		}
+	}
+	// Update the hash table with a pointer to the node at the tail of the linked list (which represents the MRU page)
+	hashtable[page] = tail;
+}
+
+// Get the least recently used page
+int get_lru_page()
+{
+	if (head != NULL)
+	{
+		// If the head of the linked list is not null, return the key of the head node (which represents the LRU page)
+		return head->key;
+	}
+	else
+	{
+		// If the linked list is empty, return -1 to indicate that there is no LRU page
+		return -1;
+	}
 }

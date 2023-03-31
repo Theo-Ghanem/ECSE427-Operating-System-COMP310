@@ -48,6 +48,40 @@ int get_instruction(char *instruction, char *name, int start_pos, int current_in
     return errCode;
 }
 
+int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *name, int current_instruction, int script_len)
+{
+    int errCode = 0;
+
+    if (current_instruction >= script_len)
+    {
+        errCode = 1;
+        return errCode;
+    }
+
+    int current_page = current_instruction / 3;
+    int page_offset = current_instruction % 3;
+    int *page_table = pcb->page_table;
+    int frame_index = page_table[current_page];
+
+    // if frame_index is -1, then the page is not in memory :(
+    if (frame_index == -1)
+    {
+        // load page from disk & update page table
+        load_page_from_disk(name, 1);
+
+        // update frame_index
+        frame_index = page_table[current_page];
+    }
+
+    // get instruction from page according to the page table
+    char *token = mem_get_value_at_index(frame_index*3 + page_offset);
+
+    // update lru linked list
+    move_to_tail(frame_index);
+
+    return errCode;
+}
+
 // First come first serve scheduling policy
 // runs processes in the order they arrive until all processes are complete
 // This is also used for Shortest Job First, we enqued the processes based on their job length.
@@ -80,6 +114,7 @@ int fcfs()
     return errCode;
 }
 
+//TODO modify this
 // Round Robin scheduling policy works for any delta (2 or 30)
 int rr(int delta)
 {
@@ -105,7 +140,7 @@ int rr(int delta)
             // execute delta instructions from memory
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
-            errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
+            errCode = get_instruction_with_page_table(current_pcb, instruction, name, current_instruction, script_len);
             parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "pcb.h"
 #include "ready_queue.h"
 
@@ -26,7 +27,8 @@ int create_script_pcb(SCRIPT_PCB *pcb, char *name, int num_lines)
     pcb->num_pages = num_pages;
 
     // page table, make an array of ints
-    pcb->page_table = (int *)malloc(num_pages * sizeof(int)); // allocate memory for the page table
+    // int temp[num_pages];
+    // memcpy(pcb->page_table, temp, sizeof(temp));
 
     // initialize page table to -1 for all values
     for (int i = 0; i < num_pages; i++)

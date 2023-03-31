@@ -11,7 +11,7 @@ typedef struct script_pcb
     int job_length_score; // new field to keep track of job length score
     struct script_pcb *next;
     int num_pages;
-    int *page_table;
+    int page_table[];
 } SCRIPT_PCB;
 
 int create_script_pcb(SCRIPT_PCB *pcb, char *name, int num_lines);

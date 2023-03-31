@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Change this variable to run another assignment tests
-search_dir=$(pwd)/../testcases/assignment2
+search_dir=$(pwd)/../tc/a2
 
 echo
 echo -e "Running all test cases in \033[1m$(basename ${search_dir})/\033[0m:"
