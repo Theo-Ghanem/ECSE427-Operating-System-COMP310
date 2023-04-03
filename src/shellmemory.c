@@ -12,7 +12,6 @@
 #include "ready_queue.h"
 #include "pcb.h"
 
-
 int get_lru_page();
 void add_node();
 struct memory_struct
@@ -135,31 +134,33 @@ int find_free_frame()
 {
 	for (int i = 0; i < var_mem_start; i += 3)
 	{
-		
+		// printf("this is the value of shellmemory[%d].var: %s \n", i, shellmemory[i].var);
+
 		if (strcmp(shellmemory[i].var, "none") == 0 || strcmp(shellmemory[i].value, "none") == 0)
 		{
+			// printf("return i / 3: %d \n", i / 3);
 			return i / 3;
 		}
-		else
-		{
-			int victim_frame = get_lru_page();
-
-			printf("Page fault! Victim page contents:\n");
-			
-			// print the contents of the victim page
-			
-			for (int j = 0; j < FRAME_SIZE; j++)
-			{
-				if(strcmp(shellmemory[victim_frame].value, "none") != 0)
-					printf("%s\n", shellmemory[victim_frame].value);
-			}
-			
-			printf("\nEnd of victim page contents.”");
-			
-			return victim_frame; // if no free frames, return the least recently used page
-		}
 	}
-	return -1;
+
+	// if we reach here then there are no free frames, and we must find the lru
+	int victim_frame = get_lru_page();
+
+	printf("Page fault! Victim page contents:\n");
+
+	// print the contents of the victim page
+
+	for (int j = 0; j < FRAME_SIZE; j++)
+	{
+		if (strcmp(shellmemory[victim_frame].value, "none") != 0)
+			printf("%s\n", shellmemory[victim_frame].value);
+	}
+
+	printf("\nEnd of victim page contents.”");
+
+	return victim_frame; // if no free frames, return the least recently used page
+
+	// return -1;
 }
 
 // load specified number of frames from script in memory starting at current frame
@@ -194,9 +195,12 @@ void load_page_from_disk(char *script, int num_frames)
 
 	// get name of file from script path
 	char *last_slash = strrchr(script, '/');
-    if (last_slash) {
-        strcat(filename, last_slash+1);
-    } else {
+	if (last_slash)
+	{
+		strcat(filename, last_slash + 1);
+	}
+	else
+	{
 		strcat(filename, script);
 	}
 	FILE *p = fopen(filename, "rt");
@@ -266,7 +270,6 @@ int mem_free_script(int memLocation, int memSize)
 
 	return errCode;
 }
-
 
 // Definition of a doubly linked list node
 typedef struct Node

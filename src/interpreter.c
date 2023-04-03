@@ -321,7 +321,7 @@ int loadScript(char *script)
 
 	// load all code into memory
 	load_page_from_disk(script, -1);
-
+	// printf("loaded all code into memory\n");
 	return errCode;
 }
 

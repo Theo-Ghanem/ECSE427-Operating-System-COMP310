@@ -27,10 +27,13 @@
             "windows": {
                 "name": "Debug mysh",
                 "type": "cppdbg",
-                "request": "attach",
+                "request": "launch",
                 "program": "${workspaceFolder}/src/mysh",
+                "args": ["<", "../tc/a3/T_tc1.txt"],
+                "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
                 "MIMode": "gdb",
-                "miDebuggerPath": "C:/MinGW/bin/gdb.exe"
+                "miDebuggerPath": "C:\\msys64\\mingw64\\bin\\gdb.exe"
             }
         }
     ],

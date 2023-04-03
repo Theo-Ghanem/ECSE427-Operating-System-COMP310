@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "pcb.h"
 #include "ready_queue.h"
 
@@ -33,11 +34,12 @@ int create_script_pcb(SCRIPT_PCB *pcb, char *name, int num_lines)
     for (int *i = pcb->page_table; i < pcb->page_table + sizeof(int) * num_pages; i++)
     {
         *i = -1;
+        // printf("page table value: %d \n", *i);
     }
 
     // Add the new PCB to the global ready queue
     enqueue_ready_queue(pcb);
-
+    // printf("pcb created aand enqueued\n");
     return 0;
 }
 
