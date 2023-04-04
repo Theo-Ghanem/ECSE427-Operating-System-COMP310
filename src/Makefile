@@ -21,4 +21,4 @@ debug: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.
 run: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
 	make clean
 	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
-	./mysh < ../tc/a3/T_tc1.txt
+	./mysh < ../tc/a3/T_tc2.txt
