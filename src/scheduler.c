@@ -17,6 +17,7 @@ int MT;
 // get the instruction from memory
 int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
+    printf("get instruction\n");
     int errCode = 0;
 
     if (current_instruction >= script_len)
@@ -60,11 +61,10 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
 
     int current_page = current_instruction / 3;
     int page_offset = current_instruction % 3;
-
     int *page_add = pcb->page_table + current_page;
 
     int frame_index = *page_add;
-
+    
     // if frame_index is -1, then the page is not in memory :(
     if (frame_index == -1)
     {
@@ -80,8 +80,23 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
     // get instruction from page according to the page table
     char *token = mem_get_value_at_index(frame_index*3 + page_offset);
 
+
+    if (token == NULL)
+    {
+        errCode = 1;
+        return errCode;
+    }
+    else if (strcmp(token, "Variable does not exist") == 0)
+    {
+        errCode = 1;
+    }
+    else
+    {
+        strcpy(instruction, token);
+    }
+
     // update lru linked list
-    move_to_tail(frame_index);
+    // move_to_tail(frame_index);
 
     return errCode;
 }
@@ -122,6 +137,7 @@ int fcfs()
 // Round Robin scheduling policy works for any delta (2 or 30)
 int rr(int delta)
 {
+    // printf("starting rr\n");
     int errCode = 0;
 
     while (ready_queue_is_empty() == 0)
@@ -141,10 +157,12 @@ int rr(int delta)
         int current_instruction = current_pcb->current_instruction;
         while (current_instruction < script_len)
         {
+            // printf("current instruction: %d\n", current_instruction);
             // execute delta instructions from memory
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction_with_page_table(current_pcb, instruction, name, current_instruction, script_len);
+            // printf("instruction: %s\n", instruction);
             parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
@@ -218,6 +236,7 @@ int aging()
 // This function starts the scheduler based on the policy passed in
 void startScheduler(char *policy)
 {
+    MT = 0;
     int errCode = 0;
     if (strcmp(policy, "FCFS") == 0)
     {

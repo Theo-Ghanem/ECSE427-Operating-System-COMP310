@@ -1,6 +1,6 @@
 # Default values for frame store size and variable store size
-framesize = 600
-varmemsize = 400
+framesize = 18
+varmemsize = 10
 
 # Compile the source files and link them into an executable
 mysh: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
@@ -21,4 +21,4 @@ debug: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.
 run: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
 	make clean
 	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
-	./mysh
+	./mysh < ../tc/a3/T_tc1.txt

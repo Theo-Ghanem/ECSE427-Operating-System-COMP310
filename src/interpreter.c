@@ -546,6 +546,7 @@ int exec(char *args[], int argSize, char *pol, int MT)
 		// load all scripts into memory in any order and add them to the ready queue
 		for (int i = 1; i < argSize - 1; i++)
 		{
+			// printf("Loading script %s into memory\n", args[i]);
 			loadScript(args[i]);
 		}
 	}
