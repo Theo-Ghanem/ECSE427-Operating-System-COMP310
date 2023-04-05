@@ -325,7 +325,7 @@ int loadScript(char *script)
 	errCode = create_script_pcb(pcb, script, scriptLineSize);
 
 	// load all code into memory
-	load_page_from_disk(script, -1);
+	load_page_from_disk(script, 2);
 	// printf("loaded all code into memory\n");
 	return errCode;
 }

@@ -17,7 +17,6 @@ int MT;
 // get the instruction from memory
 int get_instruction(char *instruction, char *name, int start_pos, int current_instruction, int script_len)
 {
-    printf("get instruction\n");
     int errCode = 0;
 
     if (current_instruction >= script_len)
@@ -121,7 +120,7 @@ int fcfs()
             // exectute all instructions in the script from memory
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
-            errCode = get_instruction(instruction, name, start_pos, current_instruction, script_len);
+            errCode = get_instruction_with_page_table(current_pcb, instruction, name, current_instruction, script_len);
             parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
