@@ -242,12 +242,12 @@ void load_page_from_disk(char *script, int num_frames)
 			// create unique ID for program line
 			// format: scriptname_page#_line#
 			char name[100];
-			// sprintf(name, "%s_page%d_line%d", script, i, current_instruction);
+			sprintf(name, "%s_page%d_line%d", script, i, current_instruction);
 
 			fgets(line, 99, p); // read the next line of the file
 			// printf("shell memory index: %d, name: %s, value: %s \n", frame_index * 3 + j, name, line);
 
-			// shellmemory[frame_index * 3 + j].var = strdup(name);
+			shellmemory[frame_index * 3 + j].var = strdup(name);
 			shellmemory[frame_index * 3 + j].value = strdup(line);
 
 			memset(line, 0, sizeof(line)); // empty the string

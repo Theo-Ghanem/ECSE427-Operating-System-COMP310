@@ -315,6 +315,11 @@ int loadScript(char *script)
 	// get number of lines of the script
 	scriptLineSize = get_number_lines(script);
 
+	// get number of pages
+	int num_pages = scriptLineSize / 3;
+	if (scriptLineSize % 3 != 0)
+		num_pages++;
+
 	// create PCB
 	SCRIPT_PCB *pcb = (SCRIPT_PCB *)malloc(sizeof(SCRIPT_PCB));
 	errCode = create_script_pcb(pcb, script, scriptLineSize);

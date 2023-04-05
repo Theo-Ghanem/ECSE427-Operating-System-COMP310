@@ -33,7 +33,7 @@ int store_script(char *script)
     char *dest = "backing_store/";
     int destlen = strlen(dest);
     // printf("namelen: %d, destlen: %d\n", namelen, destlen);
-    char *command = (char *)calloc(1, 3 + namelen + 1 + destlen +5);
+    char *command = (char *)calloc(1, 3 + namelen + 1 + destlen + 1);
     strncat(command, "cp ", 4);
     strncat(command, script, namelen);
     strncat(command, " ", 2);
