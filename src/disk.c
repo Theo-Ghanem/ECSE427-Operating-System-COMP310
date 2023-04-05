@@ -22,14 +22,9 @@ void init_backing_store()
 void delete_backing_store()
 {
     char *dirname = "backing_store";
-
-    // Check if directory exists, and if so, delete it
-    struct stat st = {0};
-    if (stat(dirname, &st) != -1)
-    {
-        char *argv[] = {"rm", "-rf", dirname, NULL};
-        execv("/bin/rm", argv);
-    }
+    char command[1024];
+    sprintf(command, "rm -rf %s", dirname);
+    system(command);
 }
 
 int store_script(char *script)
@@ -37,7 +32,9 @@ int store_script(char *script)
     int namelen = strlen(script);
     char *dest = "backing_store/";
     int destlen = strlen(dest);
+    printf("namelen: %d, destlen: %d\n", namelen, destlen);
     char *command = (char *)calloc(1, 3 + namelen + 1 + destlen);
+    printf("command: %s\n", command);
     strncat(command, "cp ", 4);
     strncat(command, script, namelen);
     strncat(command, " ", 2);
