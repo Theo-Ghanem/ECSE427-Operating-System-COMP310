@@ -21,10 +21,10 @@ struct memory_struct
 };
 
 struct memory_struct shellmemory[1000];
-int var_mem_start = FRAME_STORE_SIZE ;
+int var_mem_start = FRAME_STORE_SIZE;
 int var_mem_end = 1000;
 int var_count = 0;								 // number of variables currently stored in the variable store
-int var_index = FRAME_STORE_SIZE ;				 // index of the first available line in the variable store
+int var_index = FRAME_STORE_SIZE;				 // index of the first available line in the variable store
 int frame_index = 0;							 // index of the next available frame in the frame store
 char *frame_store[FRAME_STORE_SIZE][FRAME_SIZE]; // array of arrays representing the frame store
 
@@ -246,7 +246,7 @@ void load_page_from_disk(char *script, int num_frames)
 
 			fgets(line, 99, p); // read the next line of the file
 			// printf("shell memory index: %d, name: %s, value: %s \n", frame_index * 3 + j, name, line);
-			
+
 			// shellmemory[frame_index * 3 + j].var = strdup(name);
 			// shellmemory[frame_index * 3 + j].value = strdup(line);
 
