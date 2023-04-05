@@ -31,10 +31,15 @@ int create_script_pcb(SCRIPT_PCB *pcb, char *name, int num_lines)
     pcb->page_table = malloc(sizeof(int) * num_pages);
 
     // initialize page table to -1 for all values
-    for (int *i = pcb->page_table; i < pcb->page_table + sizeof(int) * num_pages; i++)
+    // for (int *i = pcb->page_table; i < pcb->page_table + sizeof(int) * num_pages; i++)
+    // {
+    //     *i = -1;
+    //     // printf("page table value: %d \n", *i);
+    // }
+
+    for (int i = 0; i < num_pages; i++)
     {
-        *i = -1;
-        // printf("page table value: %d \n", *i);
+        pcb->page_table[i] = i + 1;
     }
 
     // Add the new PCB to the global ready queue
