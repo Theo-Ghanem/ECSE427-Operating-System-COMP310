@@ -184,7 +184,7 @@ int rr(int delta)
         {
             if (MT == 1)
                 pthread_mutex_unlock(&(pool->queue_lock));
-            mem_free_script(start_pos, script_len);
+            // mem_free_script(start_pos, script_len);
             free_script_pcb(current_pcb);
             if (MT == 1)
                 pthread_mutex_unlock(&(pool->queue_lock));

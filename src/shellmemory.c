@@ -248,10 +248,10 @@ void load_page_from_disk(char *script, int num_frames)
 			// printf("shell memory index: %d, name: %s, value: %s \n", frame_index * 3 + j, name, line);
 
 			// shellmemory[frame_index * 3 + j].var = strdup(name);
-			// shellmemory[frame_index * 3 + j].value = strdup(line);
+			shellmemory[frame_index * 3 + j].value = strdup(line);
 
 			memset(line, 0, sizeof(line)); // empty the string
-			memset(name, 0, sizeof(name));
+			//memset(name, 0, sizeof(name));
 
 			current_instruction++;
 		}

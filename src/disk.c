@@ -32,13 +32,14 @@ int store_script(char *script)
     int namelen = strlen(script);
     char *dest = "backing_store/";
     int destlen = strlen(dest);
-    // printf("namelen: %d, destlen: %d\n", namelen, destlen);
+    printf("namelen: %d, destlen: %d\n", namelen, destlen);
     char *command = (char *)calloc(1, 3 + namelen + 1 + destlen);
-    // printf("command: %s\n", command);
     strncat(command, "cp ", 4);
     strncat(command, script, namelen);
     strncat(command, " ", 2);
     strncat(command, dest, destlen);
+    printf("command: %s\n", command);
+
     int errCode = system(command);
     free(command);
     return errCode;
