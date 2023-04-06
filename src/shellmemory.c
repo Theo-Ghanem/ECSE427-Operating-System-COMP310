@@ -289,10 +289,10 @@ int mem_free_script(int memLocation, int memSize)
 	return errCode;
 }
 
-int lru[10];
+int lru[100];
 void init_lru()
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		lru[i] = -1;
 	}
@@ -302,7 +302,7 @@ void add_to_lru(int page)
 {
 	// get the first index that is = -1
 	int i = 0;
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < 100; i++)
 	{
 		if (lru[i] == -1)
 		{
@@ -310,8 +310,8 @@ void add_to_lru(int page)
 		}
 	}
 	lru[i] = page;
-	// printf("Added %d to LRU\n", page);
-	// print_lru();
+	printf("Added %d to LRU\n", page);
+	print_lru();
 }
 
 void move_to_end_lru(int page)
@@ -323,9 +323,9 @@ void move_to_end_lru(int page)
 		i++;
 	}
 	lru[i] = -2;
-	add_to_lru(page);
-	// printf("Moved %d to end of LRU\n", page);
-	// print_lru();
+	// add_to_lru(page);
+	printf("Moved %d to end of LRU\n", page);
+	print_lru();
 }
 
 int get_lru()
@@ -345,7 +345,7 @@ int get_lru()
 void print_lru()
 {
 	printf("LRU: ");
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		printf("%d ", lru[i]);
 	}

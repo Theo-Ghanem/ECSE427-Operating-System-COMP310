@@ -69,7 +69,7 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
         // load page from disk & update page table
         load_page_from_disk(name, 1, pcb);
 
-        add_to_lru(frame_index);
+        // add_to_lru(frame_index);
 
         // error code 3 means page fault so we break from RR loop
         errCode = 3;
