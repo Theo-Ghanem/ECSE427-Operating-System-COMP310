@@ -1,2 +1,2 @@
-exec P_program4 P_program5 P_program6 RR
+exec ../tc/a3/P_program4 ../tc/a3/P_program5 ../tc/a3/P_program6 RR
 quit

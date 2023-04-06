@@ -159,7 +159,7 @@ int rr(int delta)
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction_with_page_table(current_pcb, instruction, name, current_instruction, script_len);
             // printf("instruction: %s\n", instruction);
-            parseInput(instruction);
+            errCode = parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
             current_instruction = current_pcb->current_instruction;
@@ -174,6 +174,7 @@ int rr(int delta)
                     pthread_mutex_unlock(&(pool->queue_lock));
                 break;
             }
+            
         }
         // only clear memory when the process is complete
         if (current_instruction >= script_len)

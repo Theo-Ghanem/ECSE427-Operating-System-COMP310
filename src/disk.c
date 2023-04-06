@@ -42,6 +42,36 @@ int store_script(char *script)
 
     int errCode = system(command);
     free(command);
+
+    // change all semi colons to new line characters
+
+    // open the script file
+    char filename[100];
+    strcpy(filename, "backing_store/");
+
+    // get name of file from script path
+    char *last_slash = strrchr(script, '/');
+    if (last_slash)
+    {
+        strcat(filename, last_slash + 1);
+    }
+    else
+    {
+        strcat(filename, script);
+    }
+    FILE *fp = fopen(filename, "r+"); // open for reading and writing
+    // printf("Opening file: %s\n", filename);
+    char ch;
+    while ((ch = fgetc(fp)) != EOF) {
+        if (ch == ';') {
+            // printf("Found a semicolon\n");
+            fseek(fp, -1, SEEK_CUR);    // Move the file pointer back one character
+            fputc('\n', fp);            // Replace semicolon with newline
+        }
+    }
+
+    fclose(fp);
+
     return errCode;
 }
 
@@ -51,7 +81,21 @@ int get_number_lines(char *script)
     int lines = 0;
     char ch;
 
-    FILE *p2 = fopen(script, "rt");
+    char filename[100];
+    strcpy(filename, "backing_store/");
+
+    // get name of file from script path
+    char *last_slash = strrchr(script, '/');
+    if (last_slash)
+    {
+        strcat(filename, last_slash + 1);
+    }
+    else
+    {
+        strcat(filename, script);
+    }
+
+    FILE *p2 = fopen(filename, "rt");
     while (!feof(p2))
     {
         ch = fgetc(p2);
