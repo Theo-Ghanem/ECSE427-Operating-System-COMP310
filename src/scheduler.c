@@ -69,27 +69,31 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
         // load page from disk & update page table
         load_page_from_disk(name, 1, pcb);
 
-        // update frame_index
-        frame_index = pcb->page_table[current_page];
         add_to_lru(frame_index);
-    }
 
-    // get instruction from page according to the page table
-    char *token = mem_get_value_at_index(frame_index * 3 + page_offset);
-
-    if (token == NULL)
-    {
-        errCode = 1;
-        return errCode;
-    }
-    else if (strcmp(token, "Variable does not exist") == 0)
-    {
-        errCode = 1;
+        // error code 3 means page fault so we break from RR loop
+        errCode = 3;
     }
     else
     {
-        strcpy(instruction, token);
+        // get instruction from page according to the page table
+        char *token = mem_get_value_at_index(frame_index * 3 + page_offset);
+
+        if (token == NULL)
+        {
+            errCode = 1;
+            return errCode;
+        }
+        else if (strcmp(token, "Variable does not exist") == 0)
+        {
+            errCode = 1;
+        }
+        else
+        {
+            strcpy(instruction, token);
+        }
     }
+
     return errCode;
 }
 
@@ -153,6 +157,18 @@ int rr(int delta)
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction_with_page_table(current_pcb, instruction, name, current_instruction, script_len);
+            if (errCode == 3)
+            {
+                // page fault
+                // lock the ready queue if in multi-threaded mode
+                free(instruction);
+                if (MT == 1)
+                    pthread_mutex_lock(&(pool->queue_lock));
+                enqueue_ready_queue(current_pcb);
+                if (MT == 1)
+                    pthread_mutex_unlock(&(pool->queue_lock));
+                break;
+            }
             errCode = parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
