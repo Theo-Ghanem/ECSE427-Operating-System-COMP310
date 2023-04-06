@@ -155,8 +155,8 @@ int find_free_frame()
 
 	for (int j = 0; j < FRAME_SIZE; j++)
 	{
-		if (strcmp(shellmemory[victim_frame + j].value, "none") != 0)
-			printf("%s", shellmemory[victim_frame + j].value);
+		if (strcmp(shellmemory[victim_frame * 3 + j].value, "none") != 0)
+			printf("%s", shellmemory[victim_frame * 3 + j].value);
 	}
 
 	printf("\nEnd of victim page contents.\n");
@@ -232,10 +232,19 @@ void load_page_from_disk(char *script, int num_frames, SCRIPT_PCB *pcb)
 		// update page table
 		pcb->page_table[i] = frame_index;
 
+		// remove the old page reference from the page table
+		for (int j = 0; j < max_num_pages; j++)
+		{
+			if (pcb->page_table[j] == frame_index && j != i)
+			{
+				pcb->page_table[j] = -1;
+			}
+		}
+
 		// print all values of page table
 		for (int i = 0; i < pcb->num_pages; i++)
 		{
-			printf("Page table value: %d\n", pcb->page_table[i]);
+			// printf("Page table value: %d\n", pcb->page_table[i]);
 			for (int j = 0; j < 3; j++)
 			{
 				// printf("shellmemory[%d].var=%d  shellmemory[%d].value=%d\n", frame_index + j, shellmemory[frame_index + j].var, frame_index + j, shellmemory[frame_index + j].value);
@@ -301,8 +310,8 @@ void add_to_lru(int page)
 		}
 	}
 	lru[i] = page;
-	printf("Added %d to LRU\n", page);
-	print_lru();
+	// printf("Added %d to LRU\n", page);
+	// print_lru();
 }
 
 void move_to_end_lru(int page)
@@ -315,8 +324,8 @@ void move_to_end_lru(int page)
 	}
 	lru[i] = -2;
 	add_to_lru(page);
-	printf("Moved %d to end of LRU\n", page);
-	print_lru();
+	// printf("Moved %d to end of LRU\n", page);
+	// print_lru();
 }
 
 int get_lru()
