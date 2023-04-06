@@ -31,6 +31,9 @@ int main(int argc, char *argv[])
     // Setting  up  the  backing store for  paging [For Assignment 3]
     init_backing_store();
 
+    //init the lru
+    init_lru();
+
     thread_pool_t pool;
     init_thread_pool(&pool);
 

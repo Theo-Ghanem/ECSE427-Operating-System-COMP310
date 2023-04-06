@@ -93,6 +93,10 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
 
     // update lru linked list
     // move_to_tail(frame_index);
+    // remove_from_lru(frame_index);
+    // add_to_lru(frame_index);
+    
+
 
     return errCode;
 }
