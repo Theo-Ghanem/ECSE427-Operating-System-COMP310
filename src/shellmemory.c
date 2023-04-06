@@ -310,8 +310,8 @@ void add_to_lru(int page)
 		}
 	}
 	lru[i] = page;
-	printf("Added %d to LRU\n", page);
-	print_lru();
+	// printf("Added %d to LRU\n", page);
+	// print_lru();
 }
 
 void move_to_end_lru(int page)
@@ -324,8 +324,8 @@ void move_to_end_lru(int page)
 	}
 	lru[i] = -2;
 	// add_to_lru(page);
-	printf("Moved %d to end of LRU\n", page);
-	print_lru();
+	// printf("Moved %d to end of LRU\n", page);
+	// print_lru();
 }
 
 int get_lru()
