@@ -139,17 +139,22 @@ int find_free_frame()
 {
 	for (int i = 0; i < var_mem_start; i += 3)
 	{
+		// printf("this is the value of shellmemory[%d].var: %s \n", i, shellmemory[i].var);
+
 		if (strcmp(shellmemory[i].var, "none") == 0 || strcmp(shellmemory[i].value, "none") == 0)
 		{
+			// printf("return i / 3: %d \n", i / 3);
 			return i / 3;
 		}
 	}
-	
+	// 	return -1;
 
 	// if we reach here then there are no free frames, and we must find the lru
 	int victim_frame = get_lru();
 
 	printf("Page fault! Victim page contents:\n\n");
+
+	// print the contents of the victim page
 
 	for (int j = 0; j < FRAME_SIZE; j++)
 	{
@@ -272,6 +277,7 @@ int mem_free_script(int memLocation, int memSize)
 	return errCode;
 }
 
+
 int lru[100];
 void init_lru()
 {
@@ -284,11 +290,12 @@ void init_lru()
 void add_to_lru(int page)
 {
 	// get the first index that isn't -1
-	int i = 0;
-	while (lru[i] == -1 || lru[i] == -2)
-	{
-		i++;
-	}
+	int i =0;
+	for (i = 0; i < sizeof(lru); i++) {
+        if (lru[i] == -1 ) {
+            break;
+        }
+    }
 	lru[i] = page;
 }
 
