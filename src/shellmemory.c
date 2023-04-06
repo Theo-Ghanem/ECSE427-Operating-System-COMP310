@@ -16,8 +16,9 @@ int get_lru_page();
 void add_node(int page);
 void init_lru();
 int get_lru();
-void remove_from_lru(int page);
+void move_to_end_lru(int page);
 void add_to_lru(int page);
+void print_lru();
 struct memory_struct
 {
 	char *var;
@@ -139,15 +140,11 @@ int find_free_frame()
 {
 	for (int i = 0; i < var_mem_start; i += 3)
 	{
-		// printf("this is the value of shellmemory[%d].var: %s \n", i, shellmemory[i].var);
-
 		if (strcmp(shellmemory[i].var, "none") == 0 || strcmp(shellmemory[i].value, "none") == 0)
 		{
-			// printf("return i / 3: %d \n", i / 3);
 			return i / 3;
 		}
 	}
-	// 	return -1;
 
 	// if we reach here then there are no free frames, and we must find the lru
 	int victim_frame = get_lru();
@@ -231,14 +228,19 @@ void load_page_from_disk(char *script, int num_frames, SCRIPT_PCB *pcb)
 		// find free frame in memory
 		int frame_index = find_free_frame();
 		add_to_lru(frame_index); // add the frame to the tail of the LRU list
-		if (frame_index == -1)
-		{
-			printf("No free frames in memory.\n");
-			return;
-		}
 
 		// update page table
 		pcb->page_table[i] = frame_index;
+
+		// print all values of page table
+		for (int i = 0; i < pcb->num_pages; i++)
+		{
+			printf("Page table value: %d\n", pcb->page_table[i]);
+			for (int j = 0; j < 3; j++)
+			{
+				// printf("shellmemory[%d].var=%d  shellmemory[%d].value=%d\n", frame_index + j, shellmemory[frame_index + j].var, frame_index + j, shellmemory[frame_index + j].value);
+			}
+		}
 
 		// write UP TO 3 instructions to the frame
 		for (int j = 0; j < 3 && current_instruction <= script_size; j++)
@@ -248,6 +250,7 @@ void load_page_from_disk(char *script, int num_frames, SCRIPT_PCB *pcb)
 			char name[100];
 			sprintf(name, "%s_page%d_line%d", script, i, current_instruction);
 
+			//! could this be the problem?
 			fgets(line, 99, p); // read the next line of the file
 			// printf("shell memory index: %d, name: %s, value: %s \n", frame_index * 3 + j, name, line);
 
@@ -277,11 +280,10 @@ int mem_free_script(int memLocation, int memSize)
 	return errCode;
 }
 
-
-int lru[100];
+int lru[10];
 void init_lru()
 {
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		lru[i] = -1;
 	}
@@ -289,17 +291,21 @@ void init_lru()
 
 void add_to_lru(int page)
 {
-	// get the first index that isn't -1
-	int i =0;
-	for (i = 0; i < sizeof(lru); i++) {
-        if (lru[i] == -1 ) {
-            break;
-        }
-    }
+	// get the first index that is = -1
+	int i = 0;
+	for (i = 0; i < 10; i++)
+	{
+		if (lru[i] == -1)
+		{
+			break;
+		}
+	}
 	lru[i] = page;
+	printf("Added %d to LRU\n", page);
+	print_lru();
 }
 
-void remove_from_lru(int page)
+void move_to_end_lru(int page)
 {
 	// get the index of the page
 	int i = 0;
@@ -308,8 +314,9 @@ void remove_from_lru(int page)
 		i++;
 	}
 	lru[i] = -2;
-	// add it to the end
 	add_to_lru(page);
+	printf("Moved %d to end of LRU\n", page);
+	print_lru();
 }
 
 int get_lru()
@@ -321,7 +328,17 @@ int get_lru()
 		i++;
 	}
 	int page = lru[i];
-	remove_from_lru(page);
+	move_to_end_lru(page);
 
 	return page;
+}
+
+void print_lru()
+{
+	printf("LRU: ");
+	for (int i = 0; i < 10; i++)
+	{
+		printf("%d ", lru[i]);
+	}
+	printf("\n");
 }

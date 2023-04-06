@@ -12,6 +12,6 @@ char *mem_get_value_at_index(int index);
 void move_to_tail(int frame_index);
 void load_page_from_disk(char *script, int num_frames, SCRIPT_PCB *pcb);
 void init_lru();
-void remove_from_lru(int page);
+void move_to_end_lru(int page);
 void add_to_lru(int page);
 #endif

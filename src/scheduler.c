@@ -62,7 +62,7 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
     int page_offset = current_instruction % 3;
 
     int frame_index = pcb->page_table[current_page];
-    
+
     // if frame_index is -1, then the page is not in memory :(
     if (frame_index == -1)
     {
@@ -71,11 +71,11 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
 
         // update frame_index
         frame_index = pcb->page_table[current_page];
+        add_to_lru(frame_index);
     }
 
     // get instruction from page according to the page table
-    char *token = mem_get_value_at_index(frame_index*3 + page_offset);
-
+    char *token = mem_get_value_at_index(frame_index * 3 + page_offset);
 
     if (token == NULL)
     {
@@ -89,7 +89,7 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
     else
     {
         strcpy(instruction, token);
-    }  
+    }
     return errCode;
 }
 
@@ -125,8 +125,8 @@ int fcfs()
     return errCode;
 }
 
-//TODO modify this
-// Round Robin scheduling policy works for any delta (2 or 30)
+// TODO modify this
+//  Round Robin scheduling policy works for any delta (2 or 30)
 int rr(int delta)
 {
     // printf("starting rr\n");
@@ -149,12 +149,10 @@ int rr(int delta)
         int current_instruction = current_pcb->current_instruction;
         while (current_instruction < script_len)
         {
-            // printf("current instruction: %d\n", current_instruction);
             // execute delta instructions from memory
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction_with_page_table(current_pcb, instruction, name, current_instruction, script_len);
-            // printf("instruction: %s\n", instruction);
             errCode = parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
@@ -170,7 +168,6 @@ int rr(int delta)
                     pthread_mutex_unlock(&(pool->queue_lock));
                 break;
             }
-            
         }
         // only clear memory when the process is complete
         if (current_instruction >= script_len)

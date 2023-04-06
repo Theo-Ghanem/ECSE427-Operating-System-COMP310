@@ -32,13 +32,11 @@ int store_script(char *script)
     int namelen = strlen(script);
     char *dest = "backing_store/";
     int destlen = strlen(dest);
-    // printf("namelen: %d, destlen: %d\n", namelen, destlen);
     char *command = (char *)calloc(1, 3 + namelen + 1 + destlen + 1);
     strncat(command, "cp ", 4);
     strncat(command, script, namelen);
     strncat(command, " ", 2);
     strncat(command, dest, destlen);
-    // printf("command: %s\n", command);
 
     int errCode = system(command);
     free(command);
@@ -62,11 +60,13 @@ int store_script(char *script)
     FILE *fp = fopen(filename, "r+"); // open for reading and writing
     // printf("Opening file: %s\n", filename);
     char ch;
-    while ((ch = fgetc(fp)) != EOF) {
-        if (ch == ';') {
+    while ((ch = fgetc(fp)) != EOF)
+    {
+        if (ch == ';')
+        {
             // printf("Found a semicolon\n");
-            fseek(fp, -1, SEEK_CUR);    // Move the file pointer back one character
-            fputc('\n', fp);            // Replace semicolon with newline
+            fseek(fp, -1, SEEK_CUR); // Move the file pointer back one character
+            fputc('\n', fp);         // Replace semicolon with newline
         }
     }
 
