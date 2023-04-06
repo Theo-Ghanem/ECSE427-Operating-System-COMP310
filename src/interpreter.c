@@ -337,7 +337,7 @@ int run(char *script)
 	errCode = loadScript(script);
 
 	// run the scheduler
-	startScheduler("FCFS");
+	startScheduler("RR");
 
 	return errCode;
 }

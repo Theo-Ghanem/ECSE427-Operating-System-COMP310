@@ -118,12 +118,24 @@ int fcfs()
             current_instruction = current_pcb->current_instruction;
             char *instruction = malloc(sizeof(char) * 100);
             errCode = get_instruction_with_page_table(current_pcb, instruction, name, current_instruction, script_len);
+            if (errCode == 3)
+            {
+                // page fault
+                // lock the ready queue if in multi-threaded mode
+                free(instruction);
+                if (MT == 1)
+                    pthread_mutex_lock(&(pool->queue_lock));
+                enqueue_ready_queue(current_pcb);
+                if (MT == 1)
+                    pthread_mutex_unlock(&(pool->queue_lock));
+                break;
+            }
             parseInput(instruction);
             free(instruction);
             increment_instruction(current_pcb);
         }
         // clear memory when the process is complete
-        mem_free_script(start_pos, script_len);
+        // mem_free_script(start_pos, script_len);
         free_script_pcb(current_pcb);
     }
     return errCode;
