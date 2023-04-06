@@ -18,7 +18,46 @@ debug: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.
 	gcc -o mysh shell.o interpreter.o shellmemory.o pcb.o ready_queue.o scheduler.o disk.o
 
 # Build and run the shell
-run: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+run1: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
 	make clean
 	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
 	./mysh < ../tc/a3/T_tc1.txt
+run2: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc2.txt
+run3: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc3.txt
+run4: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc4.txt
+run5: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc5.txt
+run6: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc6.txt
+run7: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc7.txt
+run8: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc8.txt
+run9: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc9.txt
+run10: shell.c interpreter.c shellmemory.c pcb.c ready_queue.c scheduler.c disk.c
+	make clean
+	make mysh framesize=$(framesize) varmemsize=$(varmemsize)
+	./mysh < ../tc/a3/T_tc10.txt
+
+
+
