@@ -44,13 +44,16 @@ do
     failed_test_cases=$((failed_test_cases + 1))
     echo -e "\033[31mFAIL\033[0m $(basename ${file})"
     
-    # ! Uncomment the following lines to see the diff output
+    # # ! Uncomment the following lines to see the diff output
     # echo
     # echo "Differences between expected output and actual output:"
     # echo
     # echo "${diff_output}"
     # echo
     # echo
+
+    # put wrong outputs in files to compare with expected outputs
+    cp ${execution_results} ${file%.*}_wrong.txt
   fi
 done
 
@@ -58,7 +61,7 @@ if test ${failed_test_cases} -ne 0; then
   echo -e "\033[31mFailed ${failed_test_cases} test cases out of ${total_test_cases}. See details above.\033[0m"
 fi
 cd ..
-rm -r env
+# rm -r env
 cd src
 make clean > /dev/null 2>&1
 echo
