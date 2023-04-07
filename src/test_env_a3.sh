@@ -36,7 +36,7 @@ do
 
   execution_results=$(mktemp)
   timeout 1 ./mysh < ${file} > ${execution_results}
-  diff_output=$(diff --ignore-trailing-space --ignore-space-change ${result_file} ${execution_results})
+  diff_output=$(diff -w ${result_file} ${execution_results})
 
   if [ -z "${diff_output}" ]; then
     echo -e "\033[32mPASS\033[0m $(basename ${file})"
@@ -45,12 +45,12 @@ do
     echo -e "\033[31mFAIL\033[0m $(basename ${file})"
     
     # # ! Uncomment the following lines to see the diff output
-    # echo
-    # echo "Differences between expected output and actual output:"
-    # echo
-    # echo "${diff_output}"
-    # echo
-    # echo
+    echo
+    echo "Differences between expected output and actual output:"
+    echo
+    echo "${diff_output}"
+    echo
+    echo
 
     # put wrong outputs in files to compare with expected outputs
     cp ${execution_results} ${file%.*}_wrong.txt
