@@ -323,7 +323,7 @@ void move_to_end_lru(int page)
 		i++;
 	}
 	lru[i] = -2;
-	// add_to_lru(page);
+	add_to_lru(page);
 	// printf("Moved %d to end of LRU\n", page);
 	// print_lru();
 }

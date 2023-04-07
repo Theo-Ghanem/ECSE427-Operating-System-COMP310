@@ -78,6 +78,7 @@ int get_instruction_with_page_table(SCRIPT_PCB *pcb, char *instruction, char *na
     {
         // get instruction from page according to the page table
         char *token = mem_get_value_at_index(frame_index * 3 + page_offset);
+        move_to_end_lru(frame_index);
 
         if (token == NULL)
         {
@@ -163,6 +164,7 @@ int rr(int delta)
         int script_len = current_pcb->script_len;
         char *name = current_pcb->name;
         int current_instruction = current_pcb->current_instruction;
+        int limit = current_instruction + delta;
         while (current_instruction < script_len)
         {
             // execute delta instructions from memory
@@ -185,7 +187,7 @@ int rr(int delta)
             free(instruction);
             increment_instruction(current_pcb);
             current_instruction = current_pcb->current_instruction;
-            if (current_instruction % delta == 0 && current_instruction < script_len)
+            if (current_instruction >= limit && current_instruction < script_len)
             {
                 // lock the ready queue if in multi-threaded mode
                 // enqueue the process back to the ready queue if not completed
