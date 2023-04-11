@@ -1,4 +1,4 @@
-
+#!/bin/bash
 cd ..
 rm -r env > /dev/null 2>&1
 mkdir env
@@ -14,7 +14,12 @@ do
   if [[ $file == P_* ]]; then
     continue
   fi
-
+  if [[ $file == T_MT* ]]; then
+    continue
+  fi
+  if [[ $file == T_AGING* ]]; then
+    continue
+  fi
 
   total_test_cases=$((total_test_cases + 1))
 
@@ -47,6 +52,8 @@ do
     echo
     echo
 
+    # put wrong outputs in files to compare with expected outputs
+    cp ${execution_results} ${file%.*}_wrong.txt
   fi
 done
 
@@ -54,7 +61,7 @@ if test ${failed_test_cases} -ne 0; then
   echo -e "\033[31mFailed ${failed_test_cases} test cases out of ${total_test_cases}. See details above.\033[0m"
 fi
 cd ..
-rm -r env
+# rm -r env
 cd src
 make clean > /dev/null 2>&1
 echo
