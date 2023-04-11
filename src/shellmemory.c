@@ -129,10 +129,9 @@ char *mem_get_value_at_index(int index)
 {
 	if (index >= var_mem_start && index < 0)
 	{
-		printf("index: %d, frame store size: %d\n", index, var_mem_start);
 		return "Index out of bounds";
 	}
-	return strdup(shellmemory[index].value);
+	return shellmemory[index].value;
 }
 
 // helper function to find free frame in memory

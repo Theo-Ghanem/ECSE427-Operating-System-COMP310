@@ -22,7 +22,7 @@ void queue_init()
 // Function to create a new ready queue
 READY_QUEUE *create_ready_queue()
 {
-    READY_QUEUE *ready_queue = (READY_QUEUE *)malloc(sizeof(READY_QUEUE) + 10 * sizeof(SCRIPT_PCB));
+    READY_QUEUE *ready_queue = (READY_QUEUE *)malloc(sizeof(READY_QUEUE) + 10 * sizeof(SCRIPT_PCB*));
     ready_queue->head = NULL;
     return ready_queue;
 }
