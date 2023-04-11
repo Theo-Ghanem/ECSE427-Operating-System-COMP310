@@ -278,6 +278,7 @@ int quit()
 		wait_for_threads();
 	}
 	delete_backing_store();
+	destroy_ready_queue();
 	exit(0);
 }
 
