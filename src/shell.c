@@ -31,11 +31,11 @@ int main(int argc, char *argv[])
     // Setting  up  the  backing store for  paging [For Assignment 3]
     init_backing_store();
 
-    //init the lru
+    // init the lru
     init_lru();
 
-    thread_pool_t pool;
-    init_thread_pool(&pool);
+    // thread_pool_t pool;
+    // init_thread_pool(&pool);
 
     printf("%s\n", "Shell version 1.2 Created January 2023\n");
 
@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
             if (errorCode == -1)
             {
                 // if error, wait for all threads to complete then end
-                pthread_join(pool.threads[0], NULL);
-                pthread_join(pool.threads[1], NULL);
+                // pthread_join(pool.threads[0], NULL);
+                // pthread_join(pool.threads[1], NULL);
                 exit(99);
             }
 
@@ -81,13 +81,13 @@ int main(int argc, char *argv[])
     }
 
     // wait for all threads to complete then end
-    pthread_join(pool.threads[0], NULL);
-    pthread_join(pool.threads[1], NULL);
+    // pthread_join(pool.threads[0], NULL);
+    // pthread_join(pool.threads[1], NULL);
 
     // clean up multi-threading
-    pthread_mutex_destroy(&pool.lock);
-    pthread_mutex_destroy(&pool.queue_lock);
-    pthread_cond_destroy(&pool.work_ready);
+    // pthread_mutex_destroy(&pool.lock);
+    // pthread_mutex_destroy(&pool.queue_lock);
+    // pthread_cond_destroy(&pool.work_ready);
 
     return 0;
 }
@@ -111,6 +111,8 @@ int parseInput(char ui[])
     {
         for (; (ui[a] == ';' || ui[a] == ' ') && a < 1000; a++)
             ; // skip white spaces
+        for (int i = 0; i < 100; i++)
+            words[i] = NULL;
 
         while (ui[a] != ';' && ui[a] != '\n' && ui[a] != '\0' && a < 1000)
         {
@@ -119,7 +121,11 @@ int parseInput(char ui[])
                 tmp[b] = ui[a];
                 // extract a word
             }
-            tmp[b] = '\0';          // terminate the word
+            tmp[b] = '\0'; // terminate the word
+            if (words[w] != NULL)
+            {
+                free(words[w]);
+            }
             words[w] = strdup(tmp); // copy the word to the array of words
             w++;                    // increment wordID
 
@@ -131,13 +137,18 @@ int parseInput(char ui[])
 
         errorCode = interpreter(words, w); // send the word to the interpreter
         w = 0;
-        memset(words, 0, sizeof(words)); // empty the array of words
-        memset(tmp, 0, sizeof(tmp));     // empty the array of words
+        // memset(words, 0, sizeof(words)); // empty the array of words
+        // memset(tmp, 0, sizeof(tmp));     // empty the array of words
 
         if (errorCode == -1)
             return errorCode;
         if (ui[a] == '\0' || ui[a] == '\n') // if end of input
             break;
+    }
+    for (int i = 0; i < 100; i++)
+    {
+        if (words[i] != NULL)
+            free(words[i]);
     }
     return errorCode;
 }
