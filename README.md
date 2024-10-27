@@ -1,6 +1,6 @@
 Authors:
 
-Mathieu Geoffroy: 260986559
-Theo Ghanem: 260972584
+- Mathieu Geoffroy
+- Theo Ghanem
 
-We are using the starter code provided by the OS team.
+We are using the starter code provided by the ECSE 427/COMP 310 OS team.
